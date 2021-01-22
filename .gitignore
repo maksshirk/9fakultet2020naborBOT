@@ -2,3 +2,7 @@ settings.py
 .idea/
 __pycache__/
 *.log
+Report/
+Карты/
+images/
+Проверены/

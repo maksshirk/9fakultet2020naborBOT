@@ -10,9 +10,9 @@ import datetime
 import os
 from settings import YANDEX_TOKEN
 import folium
-
+import uuid
 from mongodb import *
-
+from array import *
 def sms(bot, update):
     search_or_save_user(mdb, bot.effective_user, bot.message)
     check_user = check_point(mdb, bot.effective_user)
@@ -43,9 +43,9 @@ def facts_start(bot, update):
     date = time.strftime("%d.%m.%Y")
     minutes = int(minutes) + 0
     print(minutes)
-    if ((8 <= hour < 11) or (hour >= 19 and minutes >= 30 and hour <= 22)) == False:
+    if ((7 <= hour < 11) or  (18 <= hour <= 22)) == False:
         check_user = check_point(mdb, bot.effective_user)
-        text = "Доклад осуществляется утром <b>с 8.00</b>\nи вечером <b>с 19:30</b>. Не раньше!!!\n<b>Московское время: </b>" + str(hour) + ":" + str(minutes) + "\n<b>Сегодня: </b>" + date
+        text = "Доклад осуществляется утром <b>с 7.00</b>\nи вечером <b>с 18:00</b>. Не раньше!!!\n<b>Московское время: </b>" + str(hour) + ":" + str(minutes) + "\n<b>Сегодня: </b>" + date
         bot.message.reply_text(text, reply_markup=get_keyboard(check_user), parse_mode=ParseMode.HTML)
         return ConversationHandler.END
 
@@ -69,7 +69,7 @@ def facts_choice(bot, update):
         print(update.user_data["problems"])
         location_button = KeyboardButton('Отправить доклад!', request_location=True)
         reply_keyboard = [[location_button], ["Вернуться в меню!"]]
-        bot.message.reply_text('Отправьте доклад',
+        bot.message.reply_text('Отправьте доклад. Внимание внизу имеется кнопку. Нажмите на неё, иначе ничего не получится',
                                reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
                                                                 one_time_keyboard=True))
         return "facts_ok"
@@ -129,6 +129,8 @@ def get_anecdote(bot, update):
 def quest_start(bot, update):
     reply_keyboard = [["Кинофильмы"],
                       ["Литературные произведения"],
+                      ["Математический анализ"],
+                      ["Аналитическая геометрия и линейная алгебра"],
                       ["Вернуться в меню!"]]
     bot.message.reply_text('Выберите категорию',
                            reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
@@ -160,8 +162,55 @@ def quest_category(bot, update):
                           ["Ржев (2019)"],
                           ["Балканский рублеж (2019)"],
                           ["Лев Яшин. Вратарь моей мечты (2019)"],
+                          ["Жила-была девочка (1944)"],
+                          ["Мы смерти смотрели в лицо (1980)"],
+                          ["Порох (1985)"],
+                          ["Зимнее утро (1966)"],
+                          ["Блокада (1973-1977)"],
+                          ["Коридор бессмертия (2019)"],
                           ["Вернуться в меню!"]]
         bot.message.reply_text('Выберите кинофильм',
+                               reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
+                                                                one_time_keyboard=True))
+    elif bot.message.text == "Математический анализ":
+        reply_keyboard = [["Задание 1 Область определения функции и логарифма"],
+                          ["Задание 2, 3, 4 Построение графика функции"],
+                          ["Задание 5 Четность и нечетность функции"],
+                          ["Задание 6 Экстремумы функции без использования производной"],
+                          ["Задание 7 Периодические функции"],
+                          ["Задания 8, 9, 10, 11, 12, 13 Вычисление пределов и правило Лопиталя"],
+                          ["Задания 14 15 Непрерывность функции и точки разрыва"],
+                          ["Задания 16, 17, 19, 20, 21, 22 Дифференцирование сложных функций"],
+                          ["Задание 18 Значение производной в данной точке"],
+                          ["Задание 23 Приближенные вычисления с помощью производной"],
+                          ["Задание 24 Производная функции, заданной параметрическим способом"],
+                          ["Задания 25, 28 Производная неявной функции"],
+                          ["Задание 26 Уравнение касательной и нормали к графику функции"],
+                          ["Задание 27, 33 Производная второго порядка, выпуклости и точки перегиба"],
+                          ["Задание 29 Правило Лопиталя"],
+                          ["Задание 30 Нахождение асимптот графиков функций"],
+                          ["Задание 31 Нахождение интервалов монотонности"],
+                          ["Задание 32 Экстремумы фнукций"],
+                          ["Задание 34,34 Исследование функции, применение производной к построению графиков функций"],
+                          ["Вернуться в меню!"]]
+        bot.message.reply_text('Выберите задание',
+                               reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
+                                                                one_time_keyboard=True))
+    elif bot.message.text == "Аналитическая геометрия и линейная алгебра":
+        reply_keyboard = [["Задание 1-4 Задача 1-1 Комплексные числа"],
+                          ["Задание 1-4 Задача 1-2 Разложение на множители"],
+                          ["Задание 3-5 Задача 3-1 Векторы, их произведения"],
+                          ["Задание 3-5 Задача 3-2 Длина и угол между векторами"],
+                          ["Задание 4-2 Задача 4-1 Уравнение прямой"],
+                          ["Задание 6-2 Задача 6-1 Уравнение прямой проходящей через 2 точки"],
+                          ["Задание 6-2 Задача 6-2 Уравнение параллельной прямой"],
+                          ["Задание 6-2 Задача 6-3 Уравнение плоскости"],
+                          ["Задание 6-2 Задача 6-7 Проекция точки на плоскость"],
+                          ["Задание 7-2 Задачи 7-1,7-2 Поверхности второго порядка"],
+                          ["Задание 9-5 Задача 9-1 Собственные числа и векторы матрицы"],
+                          ["Задание 9-5 Задача 9-2 Собственные значения и векторы линейного оператора"],
+                          ["Вернуться в меню!"]]
+        bot.message.reply_text('Выберите индивидуальное задание',
                                reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
                                                                 one_time_keyboard=True))
     else:
@@ -174,6 +223,7 @@ def quest_category(bot, update):
                           ["Василий Теркин. Твардовский А.Т."],
                           ["Навеки девятнадцатилетник. Бакланов Г.Я."],
                           ["Героев славных имена. Сборник очерков"],
+                          ["Доклад начальника академии об образовании академии"],
                           ["Вернуться в меню!"]]
         bot.message.reply_text('Выберите книгу',
                                reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
@@ -196,7 +246,7 @@ def quest_choice(bot, update):
 
 def quest_download_photo(bot, update):
     print (bot.effective_user.id)
-
+    uid = str(uuid.uuid4())
     user_id = bot.effective_user.id
     kursant_lastname = lastname(mdb, bot.effective_user)
     time = datetime.datetime.now()
@@ -204,7 +254,7 @@ def quest_download_photo(bot, update):
     file = bot.message.photo[-1].get_file()
     file_extension = os.path.splitext(file.file_path)
     file_name = os.path.split(file.file_path)
-    file = file.download(kursant_lastname + " " + update.user_data['quest_title'] + " " + time + " " + file_name[1])
+    file = file.download(kursant_lastname + " " + uid + " " + file_name[1])
     print(file)
     group = get_group(mdb, bot.effective_user)
     try:
@@ -217,13 +267,14 @@ def quest_download_photo(bot, update):
     time = datetime.datetime.now()
     time = time.strftime("%d-%m-%Y %H-%M-%S")
     unit_report = update.user_data['quest_title']
-    save_user_report(mdb, user, report_category, unit_report, time)
+    save_user_report(mdb, user, report_category, unit_report, time, uid)
     check_user = check_point(mdb, bot.effective_user)
-    bot.message.reply_text("Ваш доклад принят в обработку!", reply_markup=get_keyboard(check_user))
+    bot.message.reply_text("Ваш доклад принят в обработку! \nУникальный номер данного доклада :\n<b>" + uid + "</b>\nПригодится в случае технических неполадок. Запишите его!", reply_markup=get_keyboard(check_user), parse_mode=ParseMode.HTML)
     return ConversationHandler.END
 
 def quest_download_document(bot, update):
     print(update.user_data['title'])
+    uid = uuid.uuid4()
     user = bot.message.from_user
     print(user.last_name)
     file = bot.message.document.get_file()
@@ -232,7 +283,7 @@ def quest_download_document(bot, update):
     file_name = os.path.split(file.file_path)
     print(file_name[1])
     print(file_extension[1])
-    file = file.download(update.user_data['user_lastname'] + " " + update.user_data['title'] + file_name[1])
+    file = file.download(update.user_data['user_lastname'] + " " + str(uid) + " " + file_name[1])
     print(file)
     try:
         os.replace(file, "Report/" + update.user_data['category'] + '/' + update.user_data['title'] + "/"+ update.user_data['group'] + "/"+ file)
@@ -369,7 +420,7 @@ def report_menu(bot, update):
     return ConversationHandler.END
 
 def report_photo(bot, update):
-
+    uid = str(uuid.uuid4())
     print(bot.message.chat.id)
     user_id = str(bot.message.chat.id)
     print(type(user_id))
@@ -385,8 +436,10 @@ def report_photo(bot, update):
     time = time.strftime("%d.%m.%Y %H-%M-%S")
     print(time)
     update.user_data['report_group'] = update.user_data['report_group'].replace('+', '')
-    file = file.download(kursant_lastname + " " + user_id + " " + update.user_data['report_group'] + " " + time + " " + file_name[1])
-    print(file)
+    print(update.user_data['report_group'])
+    print(uid)
+    file = file.download(kursant_lastname + " " + uid + " " + file_name[1])
+
     print(update.user_data['report_group'])
     group = get_group(mdb, bot.effective_user)
     print(update.user_data['report_group'])
@@ -406,9 +459,9 @@ def report_photo(bot, update):
 
     print("Тут ошибка")
     unit_report = update.user_data['report_group']
-    save_user_report(mdb, user, report_category, unit_report, time)
+    save_user_report(mdb, user, report_category, unit_report, time, uid)
     check_user = check_point(mdb, bot.effective_user)
-    bot.message.reply_text("Ваш доклад принят в обработку!", reply_markup=get_keyboard(check_user))
+    bot.message.reply_text("Ваш доклад принят в обработку! \nУникальный номер данного доклада :\n<b>" + uid + "</b>\nПригодится в случае технических неполадок. Запишите его!", reply_markup=get_keyboard(check_user), parse_mode=ParseMode.HTML)
     return ConversationHandler.END
 
 def anketa_start(bot, update):
@@ -698,6 +751,9 @@ def report(bot, update):
     find_report(bot, mdb, user_group, kursant_unit)
     print("На этом пока всё!")
 
+def report_group(bot, update):
+    user_group = check_group(mdb, bot.effective_user)
+    find_report_group(bot, mdb, user_group)
 
 
 
@@ -727,4 +783,439 @@ def get_address_from_coords(coords):
         #если не смогли, то возвращаем ошибку
         return "error"
 
+def get_rock(bot, update):
+    print("вот тут")
+    reply_keyboard = [["Отчеты"],
+                      ["Кинофильмы"],
+                      ["Литературные произведения"],
+                      ["Математический анализ"],
+                      ["Аналитическая геометрия и линейная алгебра"],
+                      ["Вернуться в меню!"]]
+    bot.message.reply_text('Выберите категорию',
+                           reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
+                                                            one_time_keyboard=True))
+    return "get_report"
+def get_report(bot, update):
+    #заполняем параметры, которые описывались выже. Впиши в поле apikey свой токен!
+    if bot.message.text == "Вернуться в меню!":
+        print("Вы здесь")
+        check_user = check_point(mdb, bot.effective_user)
+        bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
+        return ConversationHandler.END
+    print(get_group(mdb, bot.effective_user) + " " + lastname(mdb, bot.effective_user) + " запросил статус докладов! Он молодец")
+    type = bot.message.text
+    films = {1:"Чапаев (1934)",
+             2:"Повесть о настоящем человеке (1948)",
+             3:"Добровольцы (1958)",
+             4:"Обыкновенный фашизм (1965)",
+             5:"Офицеры (1972)",
+             6:"В бой идут одни старики (1973)",
+             7:"Они сражались за Родину (1975)",
+             8:"Брестская крепость (2010)",
+             9:"Легенда 17 (2013)",
+             10:"28 панфиловцев (2016)",
+             11:"Движение вверх (2017)",
+             12:"Время первых (2017)",
+             13:"Сто шагов (2019)",
+             14:"Ржев (2019)",
+             15:"Балканский рублеж (2019)",
+             16:"Лев Яшин  Вратарь моей мечты (2019)",
+             17:"Жила-была девочка (1944)",
+             18:"Мы смерти смотрели в лицо (1980)",
+             19:"Порох (1985)",
+             20:"Зимнее утро (1966)",
+             21:"Блокада (1973-1977)",
+             22:"Коридор бессмертия (2019)"}
+    books = {1:"Русский характер  Толстой А Н ",
+             2:"Волоколамское шоссе  Бек А А ",
+             3:"Взять живым! Карпов В В ",
+             4:"Горячий снег  Бондарев Ю В ",
+             5:"В окопах Сталинграда  Некрасов В П ",
+             6:"Генералиссимус Суворов  Раковский Л И ",
+             7:"Василий Теркин  Твардовский А Т ",
+             8:"Навеки девятнадцатилетник  Бакланов Г Я ",
+             9:"Героев славных имена  Сборник очерков",
+             10:"Доклад начальника академии об образовании академии"}
+    math = {1:"Задание 1 Область определения функции и логарифма",
+            2:"Задание 2, 3, 4 Построение графика функции",
+            3:"Задание 5 Четность и нечетность функции",
+            4:"Задание 6 Экстремумы функции без использования производной",
+            5:"Задание 7 Периодические функции",
+            6:"Задания 8, 9, 10, 11, 12, 13 Вычисление пределов и правило Лопиталя",
+            7:"Задания 14 15 Непрерывность функции и точки разрыва",
+            8:"Задания 16, 17, 19, 20, 21, 22 Дифференцирование сложных функций",
+            9:"Задание 18 Значение производной в данной точке",
+            10:"Задание 23 Приближенные вычисления с помощью производной",
+            11:"Задание 24 Производная функции, заданной параметрическим способом",
+            12:"Задания 25, 28 Производная неявной функции",
+            13:"Задание 26 Уравнение касательной и нормали к графику функции",
+            14:"Задание 27, 33 Производная второго порядка, выпуклости и точки перегиба",
+            15:"Задание 29 Правило Лопиталя",
+            16:"Задание 30 Нахождение асимптот графиков функций",
+            17:"Задание 31 Нахождение интервалов монотонности",
+            18:"Задание 32 Экстремумы фнукций",
+            19:"Задание 34,34 Исследование функции, применение производной к построению графиков функций"}
+    analit = {1:"Задание 1-4 Задача 1-1 Комплексные числа",
+              2:"Задание 1-4 Задача 1-2 Разложение на множители",
+              3:"Задание 3-5 Задача 3-1 Векторы, их произведения",
+              4:"Задание 3-5 Задача 3-2 Длина и угол между векторами",
+              5:"Задание 4-2 Задача 4-1 Уравнение прямой",
+              6:"Задание 6-2 Задача 6-1 Уравнение прямой проходящей через 2 точки",
+              7:"Задание 6-2 Задача 6-2 Уравнение параллельной прямой",
+              8:"Задание 6-2 Задача 6-3 Уравнение плоскости",
+              9:"Задание 6-2 Задача 6-7 Проекция точки на плоскость",
+              10:"Задание 7-2 Задачи 7-1,7-2 Поверхности второго порядка",
+              11:"Задание 9-5 Задача 9-1 Собственные числа и векторы матрицы",
+              12:"Задание 9-5 Задача 9-2 Собственные значения и векторы линейного оператора"}
+    reports = {1:"1  Отпускной билет (постановка на учет)",
+            2:"2  Бланк инструктажа (подпись родителей на обратной стороне)",
+            3:"3  Письмо родителям (подпись родителей на обратной стороне)",
+            4:"4  Служебное задания (проагитированные курсанты)",
+            5:"5  Отпускной билет (снятие с учета)"}
+    if type == "Кинофильмы":
+        count = 1
+        doklad = "<b>Ваши доклады:</b> \nКинофильмы:\n"
+        while count <= 22:
+            film = films[count]
+            film = "<b>" + film + ":</b> " + get_status_film(film, bot, update) + "\n"
+            doklad = doklad + film
+            count = count + 1
+        bot.message.reply_text(doklad, parse_mode=telegram.ParseMode.HTML)
+    if type == "Отчеты":
+        count = 1
+        doklad = "<b>Ваши отчеты:</b> \n"
+        while count <= 5:
+            reps = reports[count]
+            reps = "<b>" + reps + ":</b> " + get_status_reps(reps, bot, update) + "\n"
+            doklad = doklad + reps
+            count = count + 1
+        bot.message.reply_text(doklad, parse_mode=telegram.ParseMode.HTML)
+    if type == "Литературные произведения":
+        count = 1
+        doklad = "<b>Ваши доклады:</b> \nЛитературные произведения:\n"
+        while count <= 10:
+            book = books[count]
+            book = "<b>" + book + ":</b> " + get_status_books(book, bot, update) + "\n"
+            doklad = doklad + book
+            count = count + 1
+        bot.message.reply_text(doklad, parse_mode=telegram.ParseMode.HTML)
+    if type == "Математический анализ":
+        count = 1
+        doklad = "<b>Ваши доклады:</b> \nИндивидуальные задания по МА:\n"
+        while count <= 19:
+            mathematic = math[count]
+            mathematic = "<b>" + mathematic + ":</b> " + get_status_mathematic(mathematic, bot, update) + "\n"
+            doklad = doklad + mathematic
+            count = count + 1
+        bot.message.reply_text(doklad, parse_mode=telegram.ParseMode.HTML)
+    if type == "Аналитическая геометрия и линейная алгебра":
+        count = 1
+        doklad = "<b>Ваши доклады:</b> \nИндивидуальные задания по АГЛА:\n"
+        while count <= 12:
+            analitic = analit[count]
+            analitic = "<b>" + analitic + ":</b> " + get_status_analitic(analitic, bot, update) + "\n"
+            doklad = doklad + analitic
+            count = count + 1
+        bot.message.reply_text(doklad, parse_mode=telegram.ParseMode.HTML)
+    check_user = check_point(mdb, bot.effective_user)
+    bot.message.reply_text("Если есть какие-то вопросы, обратитесь к лейтенанту Широкопетлеву (8-911-170-18-75)", reply_markup=get_keyboard(check_user))
+    return ConversationHandler.END
 
+
+def get_count_rock(bot, update):
+    print("вот тут")
+    reply_keyboard = [["Отчеты"],
+                      ["Кинофильмы"],
+                      ["Литературные произведения"],
+                      ["Математический анализ"],
+                      ["Аналитическая геометрия и линейная алгебра"],
+                      ["Вернуться в меню!"]]
+    bot.message.reply_text('Выберите категорию',
+                           reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
+                                                            one_time_keyboard=True))
+    return "get_count_report"
+
+def get_count_report(bot, update):
+    #заполняем параметры, которые описывались выже. Впиши в поле apikey свой токен!
+    if bot.message.text == "Вернуться в меню!":
+        print("Вы здесь")
+        check_user = check_point(mdb, bot.effective_user)
+        bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
+        return ConversationHandler.END
+    print(get_group(mdb, bot.effective_user) + " " + lastname(mdb, bot.effective_user) + " запросил сколько еще работать")
+    type = bot.message.text
+    films = {1:"Чапаев (1934)",
+             2:"Повесть о настоящем человеке (1948)",
+             3:"Добровольцы (1958)",
+             4:"Обыкновенный фашизм (1965)",
+             5:"Офицеры (1972)",
+             6:"В бой идут одни старики (1973)",
+             7:"Они сражались за Родину (1975)",
+             8:"Брестская крепость (2010)",
+             9:"Легенда 17 (2013)",
+             10:"28 панфиловцев (2016)",
+             11:"Движение вверх (2017)",
+             12:"Время первых (2017)",
+             13:"Сто шагов (2019)",
+             14:"Ржев (2019)",
+             15:"Балканский рублеж (2019)",
+             16:"Лев Яшин  Вратарь моей мечты (2019)",
+             17:"Жила-была девочка (1944)",
+             18:"Мы смерти смотрели в лицо (1980)",
+             19:"Порох (1985)",
+             20:"Зимнее утро (1966)",
+             21:"Блокада (1973-1977)",
+             22:"Коридор бессмертия (2019)"}
+    books = {1:"Русский характер  Толстой А Н ",
+             2:"Волоколамское шоссе  Бек А А ",
+             3:"Взять живым! Карпов В В ",
+             4:"Горячий снег  Бондарев Ю В ",
+             5:"В окопах Сталинграда  Некрасов В П ",
+             6:"Генералиссимус Суворов  Раковский Л И ",
+             7:"Василий Теркин  Твардовский А Т ",
+             8:"Навеки девятнадцатилетник  Бакланов Г Я ",
+             9:"Героев славных имена  Сборник очерков",
+             10:"Доклад начальника академии об образовании академии"}
+    math = {1:"Задание 1 Область определения функции и логарифма",
+            2:"Задание 2, 3, 4 Построение графика функции",
+            3:"Задание 5 Четность и нечетность функции",
+            4:"Задание 6 Экстремумы функции без использования производной",
+            5:"Задание 7 Периодические функции",
+            6:"Задания 8, 9, 10, 11, 12, 13 Вычисление пределов и правило Лопиталя",
+            7:"Задания 14 15 Непрерывность функции и точки разрыва",
+            8:"Задания 16, 17, 19, 20, 21, 22 Дифференцирование сложных функций",
+            9:"Задание 18 Значение производной в данной точке",
+            10:"Задание 23 Приближенные вычисления с помощью производной",
+            11:"Задание 24 Производная функции, заданной параметрическим способом",
+            12:"Задания 25, 28 Производная неявной функции",
+            13:"Задание 26 Уравнение касательной и нормали к графику функции",
+            14:"Задание 27, 33 Производная второго порядка, выпуклости и точки перегиба",
+            15:"Задание 29 Правило Лопиталя",
+            16:"Задание 30 Нахождение асимптот графиков функций",
+            17:"Задание 31 Нахождение интервалов монотонности",
+            18:"Задание 32 Экстремумы фнукций",
+            19:"Задание 34,34 Исследование функции, применение производной к построению графиков функций"}
+    analit = {1:"Задание 1-4 Задача 1-1 Комплексные числа",
+              2:"Задание 1-4 Задача 1-2 Разложение на множители",
+              3:"Задание 3-5 Задача 3-1 Векторы, их произведения",
+              4:"Задание 3-5 Задача 3-2 Длина и угол между векторами",
+              5:"Задание 4-2 Задача 4-1 Уравнение прямой",
+              6:"Задание 6-2 Задача 6-1 Уравнение прямой проходящей через 2 точки",
+              7:"Задание 6-2 Задача 6-2 Уравнение параллельной прямой",
+              8:"Задание 6-2 Задача 6-3 Уравнение плоскости",
+              9:"Задание 6-2 Задача 6-7 Проекция точки на плоскость",
+              10:"Задание 7-2 Задачи 7-1,7-2 Поверхности второго порядка",
+              11:"Задание 9-5 Задача 9-1 Собственные числа и векторы матрицы",
+              12:"Задание 9-5 Задача 9-2 Собственные значения и векторы линейного оператора"}
+    reports = {1:"1  Отпускной билет (постановка на учет)",
+            2:"2  Бланк инструктажа (подпись родителей на обратной стороне)",
+            3:"3  Письмо родителям (подпись родителей на обратной стороне)",
+            4:"4  Служебное задания (проагитированные курсанты)",
+            5:"5  Отпускной билет (снятие с учета)"}
+    if type == "Кинофильмы":
+        text = "Кинофильмы:\n"
+        cur = mdb.users.find({})
+        for doc in cur:
+            bot = doc["user_id"]
+            count = 1
+            doklad = "<b>Ваши доклады:</b> \nКинофильмы:\n"
+            while count <= 22:
+                film = films[count]
+                film = "<b>" + film + ":</b> " + get_count_film(film, bot, update) + "\n"
+                doklad = doklad + film
+                count = count + 1
+        bot.message.reply_text(doklad, parse_mode=telegram.ParseMode.HTML)
+    if type == "Отчеты":
+        count = 1
+        doklad = "<b>Ваши отчеты:</b> \n"
+        while count <= 5:
+            reps = reports[count]
+            reps = "<b>" + reps + ":</b> " + get_count_reps(reps, bot, update) + "\n"
+            doklad = doklad + reps
+            count = count + 1
+        bot.message.reply_text(doklad, parse_mode=telegram.ParseMode.HTML)
+    if type == "Литературные произведения":
+        count = 1
+        doklad = "<b>Ваши доклады:</b> \nЛитературные произведения:\n"
+        while count <= 10:
+            book = books[count]
+            book = "<b>" + book + ":</b> " + get_count_books(book, bot, update) + "\n"
+            doklad = doklad + book
+            count = count + 1
+        bot.message.reply_text(doklad, parse_mode=telegram.ParseMode.HTML)
+    if type == "Математический анализ":
+        count = 1
+        doklad = "<b>Ваши доклады:</b> \nИндивидуальные задания по МА:\n"
+        while count <= 19:
+            mathematic = math[count]
+            mathematic = "<b>" + mathematic + ":</b> " + get_count_mathematic(mathematic, bot, update) + "\n"
+            doklad = doklad + mathematic
+            count = count + 1
+        bot.message.reply_text(doklad, parse_mode=telegram.ParseMode.HTML)
+    if type == "Аналитическая геометрия и линейная алгебра":
+        count = 1
+        doklad = "<b>Ваши доклады:</b> \nИндивидуальные задания по АГЛА:\n"
+        while count <= 12:
+            analitic = analit[count]
+            analitic = "<b>" + analitic + ":</b> " + get_count_analitic(analitic, bot, update) + "\n"
+            doklad = doklad + analitic
+            count = count + 1
+        bot.message.reply_text(doklad, parse_mode=telegram.ParseMode.HTML)
+    check_user = check_point(mdb, bot.effective_user)
+    bot.message.reply_text("Если есть какие-то вопросы, обратитесь к лейтенанту Широкопетлеву (8-911-170-18-75)", reply_markup=get_keyboard(check_user))
+    return ConversationHandler.END
+
+
+def get_help(bot, update):
+    print("вот тут")
+    #["Руководящие документы"],
+    #["Отчеты"],
+    reply_keyboard = [["Кинофильмы"],
+                      ["Литературные произведения"],
+                      ["Математический анализ"],
+                      ["Аналитическая геометрия и линейная алгебра"],
+                      ["Вернуться в меню!"]]
+    bot.message.reply_text('Выберите категорию',
+                           reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
+                                                            one_time_keyboard=True))
+    return "get_type_help"
+
+
+def get_type_help(bot, update):
+    if bot.message.text == "Вернуться в меню!":
+        print("Вы здесь")
+        check_user = check_point(mdb, bot.effective_user)
+        bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
+        return ConversationHandler.END
+    update.user_data['quest_category'] = bot.message.text
+    if bot.message.text == "Руководящие документы":
+        reply_keyboard = [["Федеральный закон О статусе военнослужащих"],
+                          ["Общевоинские уставы ВС РФ"],
+                          ["3. Письмо родителям (подпись родителей на обратной стороне)"],
+                          ["4. Служебное задания (проагитированные курсанты)"],
+                          ["5. Отпускной билет (снятие с учета)"],
+                          ["Вернуться в меню!"]]
+        bot.message.reply_text('Выберите документ!',
+                               reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
+                                                                one_time_keyboard=True))
+    if bot.message.text == "Отчеты":
+        reply_keyboard = [["1. Отпускной билет (постановка на учет)"],
+                          ["2. Бланк инструктажа (подпись родителей на обратной стороне)"],
+                          ["3. Письмо родителям (подпись родителей на обратной стороне)"],
+                          ["4. Служебное задания (проагитированные курсанты)"],
+                          ["5. Отпускной билет (снятие с учета)"],
+                          ["Вернуться в меню!"]]
+        bot.message.reply_text('Выберите документ!',
+                               reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
+                                                                one_time_keyboard=True))
+    elif bot.message.text == "Кинофильмы":
+        reply_keyboard = [["Чапаев (1934)"],
+                          ["Повесть о настоящем человеке (1948)"],
+                          ["Добровольцы (1958)"],
+                          ["Обыкновенный фашизм (1965)"],
+                          ["Офицеры (1972)"],
+                          ["В бой идут одни старики (1973)"],
+                          ["Они сражались за Родину (1975)"],
+                          ["Брестская крепость (2010)"],
+                          ["Легенда 17 (2013)"],
+                          ["28 панфиловцев (2016)"],
+                          ["Движение вверх (2017)"],
+                          ["Время первых (2017)"],
+                          ["Сто шагов (2019)"],
+                          ["Ржев (2019)"],
+                          ["Балканский рублеж (2019)"],
+                          ["Лев Яшин. Вратарь моей мечты (2019)"],
+                          ["Жила-была девочка (1944)"],
+                          ["Мы смерти смотрели в лицо (1980)"],
+                          ["Порох (1985)"],
+                          ["Зимнее утро (1966)"],
+                          ["Блокада (1973-1977)"],
+                          ["Коридор бессмертия (2019)"],
+                          ["Вернуться в меню!"]]
+        bot.message.reply_text('Выберите кинофильм',
+                               reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
+                                                                one_time_keyboard=True))
+    elif bot.message.text == "Математический анализ":
+        reply_keyboard = [["Задание 1 Область определения функции и логарифма"],
+                          ["Задание 2, 3, 4 Построение графика функции"],
+                          ["Задание 5 Четность и нечетность функции"],
+                          ["Задание 6 Экстремумы функции без использования производной"],
+                          ["Задание 7 Периодические функции"],
+                          ["Задания 8, 9, 10, 11, 12, 13 Вычисление пределов и правило Лопиталя"],
+                          ["Задания 14 15 Непрерывность функции и точки разрыва"],
+                          ["Задания 16, 17, 19, 20, 21, 22 Дифференцирование сложных функций"],
+                          ["Задание 18 Значение производной в данной точке"],
+                          ["Задание 23 Приближенные вычисления с помощью производной"],
+                          ["Задание 24 Производная функции, заданной параметрическим способом"],
+                          ["Задания 25, 28 Производная неявной функции"],
+                          ["Задание 26 Уравнение касательной и нормали к графику функции"],
+                          ["Задание 27, 33 Производная второго порядка, выпуклости и точки перегиба"],
+                          ["Задание 29 Правило Лопиталя"],
+                          ["Задание 30 Нахождение асимптот графиков функций"],
+                          ["Задание 31 Нахождение интервалов монотонности"],
+                          ["Задание 32 Экстремумы фнукций"],
+                          ["Задание 34,34 Исследование функции, применение производной к построению графиков функций"],
+                          ["Вернуться в меню!"]]
+        bot.message.reply_text('Выберите задание',
+                               reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
+                                                                one_time_keyboard=True))
+    elif bot.message.text == "Аналитическая геометрия и линейная алгебра":
+        reply_keyboard = [["Задание 1-4 Задача 1-1 Комплексные числа"],
+                          ["Задание 1-4 Задача 1-2 Разложение на множители"],
+                          ["Задание 3-5 Задача 3-1 Векторы, их произведения"],
+                          ["Задание 3-5 Задача 3-2 Длина и угол между векторами"],
+                          ["Задание 4-2 Задача 4-1 Уравнение прямой"],
+                          ["Задание 6-2 Задача 6-1 Уравнение прямой проходящей через 2 точки"],
+                          ["Задание 6-2 Задача 6-2 Уравнение параллельной прямой"],
+                          ["Задание 6-2 Задача 6-3 Уравнение плоскости"],
+                          ["Задание 6-2 Задача 6-7 Проекция точки на плоскость"],
+                          ["Задание 7-2 Задачи 7-1,7-2 Поверхности второго порядка"],
+                          ["Задание 9-5 Задача 9-1 Собственные числа и векторы матрицы"],
+                          ["Задание 9-5 Задача 9-2 Собственные значения и векторы линейного оператора"],
+                          ["Вернуться в меню!"]]
+        bot.message.reply_text('Выберите индивидуальное задание',
+                               reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
+                                                                one_time_keyboard=True))
+    else:
+        reply_keyboard = [["Русский характер. Толстой А.Н."],
+                          ["Волоколамское шоссе. Бек А.А."],
+                          ["Взять живым! Карпов В.В."],
+                          ["Горячий снег. Бондарев Ю.В."],
+                          ["В окопах Сталинграда. Некрасов В.П."],
+                          ["Генералиссимус Суворов. Раковский Л.И."],
+                          ["Василий Теркин. Твардовский А.Т."],
+                          ["Навеки девятнадцатилетник. Бакланов Г.Я."],
+                          ["Героев славных имена. Сборник очерков"],
+                          ["Доклад начальника академии об образовании академии"],
+                          ["Вернуться в меню!"]]
+        bot.message.reply_text('Выберите книгу',
+                               reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
+                                                                one_time_keyboard=True))
+    print("123")
+    return "get_choice_help"
+
+def get_choice_help(bot, update):
+    bot.message.reply_text('Материал может загружаться какое-то время!')
+    print("Я оказался тут")
+    if bot.message.text == "Вернуться в меню!":
+        print("Вы здесь")
+        check_user = check_point(mdb, bot.effective_user)
+        bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
+        return ConversationHandler.END
+    update.user_data['quest_title'] = bot.message.text
+    type = update.user_data['quest_category']
+    title = update.user_data['quest_title']
+    report_category = type.replace('.', ' ')
+    unit_report = title.replace('.', ' ')
+    title = title + ".zip"
+    path = "Справочник/" + type + "/" + title
+    try:
+        with open(path, "rb") as file:
+            update.bot.send_document(chat_id=bot.message.chat.id, document=file, filename=title)
+    except FileNotFoundError:
+        os.makedirs("Справочник/" + type + "/")
+        bot.message.reply_text("Загрузите файл в папку:" + " Справочник/" + type + "/" + "\n и назовите его: " + title)
+    check_user = check_point(mdb, bot.effective_user)
+    bot.message.reply_text('Если вы хотите добавить дополнительный материал, мы будем очень рады! Либо если хотите получить какие-то материалы в доступ напишите лейтенанту Широкопетлеву (8-911-170-18-75)')
+    bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
+    return ConversationHandler.END
