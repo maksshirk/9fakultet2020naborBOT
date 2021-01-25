@@ -13,6 +13,7 @@ import folium
 import uuid
 from mongodb import *
 from array import *
+
 def sms(bot, update):
     search_or_save_user(mdb, bot.effective_user, bot.message)
     check_user = check_point(mdb, bot.effective_user)
@@ -28,10 +29,19 @@ def parrot(bot, update):
 
 
 def get_contact(bot, update):
+    SOS(bot)
     print(bot.message.contact)
     bot.message.reply_text('{}, Мы получили ваш номер телефона'.format(bot.message.chat.first_name))
 
+def SOS(bot):
+    if bot.message.text == "/sos":
+        print("Вы здесь")
+        check_user = check_point(mdb, bot.effective_user)
+        bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
+        return ConversationHandler.END
+
 def facts_start(bot, update):
+    SOS(bot)
     check_user = check_point(mdb, bot.effective_user)
     if check_user == 1:
         bot.message.reply_text('Сначала введите данные для экстренной связи!', reply_markup=get_keyboard(check_user))
@@ -48,8 +58,6 @@ def facts_start(bot, update):
         text = "Доклад осуществляется утром <b>с 7.00</b>\nи вечером <b>с 18:00</b>. Не раньше!!!\n<b>Московское время: </b>" + str(hour) + ":" + str(minutes) + "\n<b>Сегодня: </b>" + date
         bot.message.reply_text(text, reply_markup=get_keyboard(check_user), parse_mode=ParseMode.HTML)
         return ConversationHandler.END
-
-    location_button = KeyboardButton('Здоров. Без происшествий и проблем, требующих вмешательств.', request_location=True)
     reply_keyboard = [['Здоров. Без происшествий и проблем, требующих вмешательств.'],
                       ["Имеются проблемы со здоровьем или другого характера"],
                       ["Вернуться в меню!"]]
@@ -59,6 +67,7 @@ def facts_start(bot, update):
     return "facts_choice"
 
 def facts_choice(bot, update):
+    SOS(bot)
     if bot.message.text == "Вернуться в меню!":
         print("Вы здесь")
         check_user = check_point(mdb, bot.effective_user)
@@ -81,6 +90,7 @@ def facts_choice(bot, update):
     return "facts_problems"
 
 def facts_problems(bot, update):
+    SOS(bot)
     if bot.message.text == "Вернуться в меню!":
         print("Вы здесь")
         check_user = check_point(mdb, bot.effective_user)
@@ -94,6 +104,7 @@ def facts_problems(bot, update):
     return "facts_ok"
 
 def facts_ok(bot, update):
+    SOS(bot)
     problems = update.user_data["problems"]
     print(update.user_data)
     get_location(bot, problems)
@@ -103,6 +114,7 @@ def facts_ok(bot, update):
     return ConversationHandler.END
 
 def get_location(bot, problems):
+    SOS(bot)
     location = bot.message.location
     print(location)
     print(problems)
@@ -118,6 +130,7 @@ def get_location(bot, problems):
 
 
 def get_anecdote(bot, update):
+    SOS(bot)
     receive = requests.get('http://anekdotme.ru/random')
     page = BeautifulSoup(receive.text, "html.parser")
     find = page.select('.anekdot_text')
@@ -127,6 +140,7 @@ def get_anecdote(bot, update):
 
 
 def quest_start(bot, update):
+    SOS(bot)
     reply_keyboard = [["Кинофильмы"],
                       ["Литературные произведения"],
                       ["Математический анализ"],
@@ -139,6 +153,7 @@ def quest_start(bot, update):
 
 
 def quest_category(bot, update):
+    SOS(bot)
     if bot.message.text == "Вернуться в меню!":
         print("Вы здесь")
         check_user = check_point(mdb, bot.effective_user)
@@ -218,7 +233,6 @@ def quest_category(bot, update):
                           ["Волоколамское шоссе. Бек А.А."],
                           ["Взять живым! Карпов В.В."],
                           ["Горячий снег. Бондарев Ю.В."],
-                          ["В окопах Сталинграда. Некрасов В.П."],
                           ["Генералиссимус Суворов. Раковский Л.И."],
                           ["Василий Теркин. Твардовский А.Т."],
                           ["Навеки девятнадцатилетник. Бакланов Г.Я."],
@@ -232,6 +246,7 @@ def quest_category(bot, update):
     return "quest_choice"
 
 def quest_choice(bot, update):
+    SOS(bot)
     if bot.message.text == "Вернуться в меню!":
         print("Вы здесь")
         check_user = check_point(mdb, bot.effective_user)
@@ -245,6 +260,7 @@ def quest_choice(bot, update):
     return "quest_download_photo"
 
 def quest_download_photo(bot, update):
+    SOS(bot)
     print (bot.effective_user.id)
     uid = str(uuid.uuid4())
     user_id = bot.effective_user.id
@@ -273,6 +289,7 @@ def quest_download_photo(bot, update):
     return ConversationHandler.END
 
 def quest_download_document(bot, update):
+    SOS(bot)
     print(update.user_data['title'])
     uid = uuid.uuid4()
     user = bot.message.from_user
@@ -295,6 +312,7 @@ def quest_download_document(bot, update):
     print("Круто")
 
 def user_start(bot, update):
+    SOS(bot)
     print(bot._effective_message.bot.get_chat_member(chat_id='-1001371757648', user_id=bot.message.from_user.id).status)
     print("Он представился")
     check_user = check_point(mdb, bot.effective_user)
@@ -307,6 +325,7 @@ def user_start(bot, update):
         return ConversationHandler.END
     user = search_or_save_user(mdb, bot.effective_user, bot.message)
     reply_keyboard = [["Курсовое звено"],
+                      ["Комиссия"],
                       ["901", "903"],
                       ["904", "905-1"],
                       ["905-2", "906"]]
@@ -316,7 +335,14 @@ def user_start(bot, update):
     return "user_group"
 
 def user_get_group(bot, update):
+    SOS(bot)
     update.user_data['user_group'] = bot.message.text
+    if bot.message.text == "Комиссия":
+        reply_keyboard = [["Курсант 95 курса"]]
+        bot.message.reply_text('Ваша должность?',
+                               reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
+                                                                one_time_keyboard=True))
+        return "user_unit_officer"
     if bot.message.text == "Курсовое звено":
         reply_keyboard = [["Начальник курса"],
                           ["Курсовой офицер"],
@@ -336,28 +362,33 @@ def user_get_group(bot, update):
         return "user_unit"
 
 def user_get_unit(bot, update):
+    SOS(bot)
     update.user_data['user_unit'] = bot.message.text
     bot.message.reply_text("Ваша фамилия?", reply_markup=ReplyKeyboardRemove())
     return "user_lastname"
 
 def user_get_unit_officer(bot, update):
+    SOS(bot)
     print("Я тут")
     update.user_data['user_unit'] = bot.message.text
     bot.message.reply_text("Ваша фамилия?", reply_markup=ReplyKeyboardRemove())
     return "user_lastname"
 
 def user_get_lastname(bot, update):
+    SOS(bot)
     update.user_data['user_lastname'] = bot.message.text
     bot.message.reply_text("Ваше имя?", reply_markup=ReplyKeyboardRemove())
     return "user_name"
 
 
 def user_get_name(bot, update):
+    SOS(bot)
     update.user_data['user_name'] = bot.message.text
     bot.message.reply_text("Ваше отчество?", reply_markup=ReplyKeyboardRemove())
     return "user_middlename"
 
 def user_get_middlename(bot, update):
+    SOS(bot)
     update.user_data['user_middlename'] = bot.message.text
     button_phone = KeyboardButton('Отправить номер телефона', request_contact=True)
     reply_keyboard = [button_phone]
@@ -368,17 +399,18 @@ def user_get_middlename(bot, update):
     return "user_phone"
 
 def user_get_phone(bot, update):
-
+    SOS(bot)
     update.user_data['user_phone'] = bot.message.contact.phone_number
     user = search_or_save_user(mdb, bot.effective_user, bot.message)
     print(update.user_data)
-    save_kursant_anketa(mdb, user, update.user_data)
+    save_kursant_anketa(mdb, user, update.user_data, update)
     print(bot.message.contact)
     check_user = check_point(mdb, bot.effective_user)
     bot.message.reply_text("Приветствую, {}!\nТеперь Ваши данные на проверке!\nНо Вы уже можете приступить к выполнению служебных заданий.".format(bot.message.chat.first_name), reply_markup=get_keyboard(check_user))
     return ConversationHandler.END
 
 def report_start(bot, update):
+    SOS(bot)
     check_user = check_point(mdb, bot.effective_user)
     if bot._effective_message.bot.get_chat_member(chat_id='-1001371757648', user_id=bot.message.from_user.id).status != "left":
         print("Все норм")
@@ -400,6 +432,7 @@ def report_start(bot, update):
     return "report_get"
 
 def report_get(bot, update):
+    SOS(bot)
     print(bot.message.text == "Вернуться в меню!")
     if bot.message.text == "Вернуться в меню!":
         print("Вы здесь")
@@ -415,11 +448,13 @@ def report_get(bot, update):
     return "report_group"
 
 def report_menu(bot, update):
+    SOS(bot)
     check_user = check_point(mdb, bot.effective_user)
     bot.message.reply_text("Вы вернулись в меню!", reply_markup=get_keyboard(check_user))
     return ConversationHandler.END
 
 def report_photo(bot, update):
+    SOS(bot)
     uid = str(uuid.uuid4())
     print(bot.message.chat.id)
     user_id = str(bot.message.chat.id)
@@ -465,12 +500,14 @@ def report_photo(bot, update):
     return ConversationHandler.END
 
 def anketa_start(bot, update):
+    SOS(bot)
     user = search_or_save_user(mdb, bot.effective_user, bot.message)
     reply_keyboard = [["Пропустить ввод данных матери (мачехи, опекуншы)"],["Вернуться в меню!"]]
     bot.message.reply_text('Введите фамилию матери (мачехи, опекуншы) либо перейдите к вводу данных отца (отчима, опекуна)', reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True, one_time_keyboard=True))
     return "user_lastname_mother"
 
 def anketa_get_lastname_mother(bot, update):
+    SOS(bot)
     if bot.message.text == "Вернуться в меню!":
         check_user = check_point(mdb, bot.effective_user)
         bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
@@ -492,6 +529,7 @@ def anketa_get_lastname_mother(bot, update):
 
 
 def anketa_get_name_mother(bot, update):
+    SOS(bot)
     if bot.message.text == "Вернуться в меню!":
         check_user = check_point(mdb, bot.effective_user)
         bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
@@ -503,6 +541,7 @@ def anketa_get_name_mother(bot, update):
 
 
 def anketa_get_middlename_mother(bot, update):
+    SOS(bot)
     if bot.message.text == "Вернуться в меню!":
         check_user = check_point(mdb, bot.effective_user)
         bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
@@ -514,6 +553,7 @@ def anketa_get_middlename_mother(bot, update):
 
 
 def anketa_get_phone_mother(bot, update):
+    SOS(bot)
     if bot.message.text == "Вернуться в меню!":
         check_user = check_point(mdb, bot.effective_user)
         bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
@@ -525,6 +565,7 @@ def anketa_get_phone_mother(bot, update):
 
 
 def anketa_get_address_mother(bot, update):
+    SOS(bot)
     if bot.message.text == "Вернуться в меню!":
         check_user = check_point(mdb, bot.effective_user)
         bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
@@ -536,6 +577,7 @@ def anketa_get_address_mother(bot, update):
 
 
 def anketa_get_lastname_father(bot, update):
+    SOS(bot)
     if bot.message.text == "Вернуться в меню!":
         check_user = check_point(mdb, bot.effective_user)
         bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
@@ -558,6 +600,7 @@ def anketa_get_lastname_father(bot, update):
 
 
 def anketa_get_name_father(bot, update):
+    SOS(bot)
     if bot.message.text == "Вернуться в меню!":
         check_user = check_point(mdb, bot.effective_user)
         bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
@@ -569,6 +612,7 @@ def anketa_get_name_father(bot, update):
 
 
 def anketa_get_middlename_father(bot, update):
+    SOS(bot)
     if bot.message.text == "Вернуться в меню!":
         check_user = check_point(mdb, bot.effective_user)
         bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
@@ -580,6 +624,7 @@ def anketa_get_middlename_father(bot, update):
 
 
 def anketa_get_phone_father(bot, update):
+    SOS(bot)
     if bot.message.text == "Вернуться в меню!":
         check_user = check_point(mdb, bot.effective_user)
         bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
@@ -591,6 +636,7 @@ def anketa_get_phone_father(bot, update):
 
 
 def anketa_get_address_father(bot, update):
+    SOS(bot)
     if bot.message.text == "Вернуться в меню!":
         check_user = check_point(mdb, bot.effective_user)
         bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
@@ -602,6 +648,7 @@ def anketa_get_address_father(bot, update):
 
 
 def anketa_get_lastname_other(bot, update):
+    SOS(bot)
     if bot.message.text == "Вернуться в меню!":
         check_user = check_point(mdb, bot.effective_user)
         bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
@@ -613,6 +660,7 @@ def anketa_get_lastname_other(bot, update):
 
 
 def anketa_get_name_other(bot, update):
+    SOS(bot)
     if bot.message.text == "Вернуться в меню!":
         check_user = check_point(mdb, bot.effective_user)
         bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
@@ -624,6 +672,7 @@ def anketa_get_name_other(bot, update):
 
 
 def anketa_get_middlename_other(bot, update):
+    SOS(bot)
     if bot.message.text == "Вернуться в меню!":
         check_user = check_point(mdb, bot.effective_user)
         bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
@@ -635,6 +684,7 @@ def anketa_get_middlename_other(bot, update):
 
 
 def anketa_get_phone_other(bot, update):
+    SOS(bot)
     if bot.message.text == "Вернуться в меню!":
         check_user = check_point(mdb, bot.effective_user)
         bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
@@ -646,6 +696,7 @@ def anketa_get_phone_other(bot, update):
 
 
 def anketa_get_address_other(bot, update):
+    SOS(bot)
     if bot.message.text == "Вернуться в меню!":
         check_user = check_point(mdb, bot.effective_user)
         bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
@@ -661,6 +712,7 @@ def anketa_get_address_other(bot, update):
 
 
 def anketa_comment(bot, update):
+    SOS(bot)
     user = search_or_save_user(mdb, bot.effective_user, bot.message)
     anketa = save_user_anketa(mdb, user, update.user_data)
     print(anketa)
@@ -678,6 +730,7 @@ def anketa_comment(bot, update):
 
 
 def anketa_exit_comment(bot, update):
+    SOS(bot)
     update.user_data['comment'] = None
     user = search_or_save_user(mdb, bot.effective_user, bot.message)
     save_user_anketa(mdb, user, update.user_data)
@@ -693,10 +746,12 @@ def anketa_exit_comment(bot, update):
 
 
 def dontknow(bot, update):
+    SOS(bot)
     bot.message.reply_text("Я Вас не понимаю, выберите оценку на клавиатуре!")
 
 
 def send_meme(bot, update):
+    SOS(bot)
     lists = glob('images/*')
     picture = choice(lists)
     inl_keyboard = InlineKeyboardMarkup([[
@@ -710,6 +765,7 @@ def send_meme(bot, update):
 
 
 def inline_button_pressed(bot, update):
+    SOS(bot)
     print(bot.callback_query)
     query = bot.callback_query
     update.bot.edit_message_caption(
@@ -718,12 +774,14 @@ def inline_button_pressed(bot, update):
         message_id=query.message.message_id)
 
 def test_bd(bot, update):
+    SOS(bot)
     print("Запуск")
     d = check_point(mdb, bot.effective_user)
     print(d['Present']['check_present'])
     return 0
 
 def report(bot, update):
+    SOS(bot)
     user_group = check_group(mdb, bot.effective_user)
     user_unit = check_unit(mdb, bot.effective_user)
     user_lastname = lastname(mdb, bot.effective_user)
@@ -752,6 +810,7 @@ def report(bot, update):
     print("На этом пока всё!")
 
 def report_group(bot, update):
+    SOS(bot)
     user_group = check_group(mdb, bot.effective_user)
     find_report_group(bot, mdb, user_group)
 
@@ -760,6 +819,7 @@ def report_group(bot, update):
 
 
 def get_address_from_coords(coords):
+
     #заполняем параметры, которые описывались выже. Впиши в поле apikey свой токен!
     print("тут")
     PARAMS = {
@@ -784,6 +844,7 @@ def get_address_from_coords(coords):
         return "error"
 
 def get_rock(bot, update):
+    SOS(bot)
     print("вот тут")
     reply_keyboard = [["Отчеты"],
                       ["Кинофильмы"],
@@ -796,6 +857,7 @@ def get_rock(bot, update):
                                                             one_time_keyboard=True))
     return "get_report"
 def get_report(bot, update):
+    SOS(bot)
     #заполняем параметры, которые описывались выже. Впиши в поле apikey свой токен!
     if bot.message.text == "Вернуться в меню!":
         print("Вы здесь")
@@ -830,12 +892,11 @@ def get_report(bot, update):
              2:"Волоколамское шоссе  Бек А А ",
              3:"Взять живым! Карпов В В ",
              4:"Горячий снег  Бондарев Ю В ",
-             5:"В окопах Сталинграда  Некрасов В П ",
-             6:"Генералиссимус Суворов  Раковский Л И ",
-             7:"Василий Теркин  Твардовский А Т ",
-             8:"Навеки девятнадцатилетник  Бакланов Г Я ",
-             9:"Героев славных имена  Сборник очерков",
-             10:"Доклад начальника академии об образовании академии"}
+             5:"Генералиссимус Суворов  Раковский Л И ",
+             6:"Василий Теркин  Твардовский А Т ",
+             7:"Навеки девятнадцатилетник  Бакланов Г Я ",
+             8:"Героев славных имена  Сборник очерков",
+             9:"Доклад начальника академии об образовании академии"}
     math = {1:"Задание 1 Область определения функции и логарифма",
             2:"Задание 2, 3, 4 Построение графика функции",
             3:"Задание 5 Четность и нечетность функции",
@@ -893,7 +954,7 @@ def get_report(bot, update):
     if type == "Литературные произведения":
         count = 1
         doklad = "<b>Ваши доклады:</b> \nЛитературные произведения:\n"
-        while count <= 10:
+        while count <= 9:
             book = books[count]
             book = "<b>" + book + ":</b> " + get_status_books(book, bot, update) + "\n"
             doklad = doklad + book
@@ -923,6 +984,7 @@ def get_report(bot, update):
 
 
 def get_count_rock(bot, update):
+    SOS(bot)
     print("вот тут")
     reply_keyboard = [["Отчеты"],
                       ["Кинофильмы"],
@@ -936,6 +998,7 @@ def get_count_rock(bot, update):
     return "get_count_report"
 
 def get_count_report(bot, update):
+    SOS(bot)
     #заполняем параметры, которые описывались выже. Впиши в поле apikey свой токен!
     if bot.message.text == "Вернуться в меню!":
         print("Вы здесь")
@@ -970,12 +1033,11 @@ def get_count_report(bot, update):
              2:"Волоколамское шоссе  Бек А А ",
              3:"Взять живым! Карпов В В ",
              4:"Горячий снег  Бондарев Ю В ",
-             5:"В окопах Сталинграда  Некрасов В П ",
-             6:"Генералиссимус Суворов  Раковский Л И ",
-             7:"Василий Теркин  Твардовский А Т ",
-             8:"Навеки девятнадцатилетник  Бакланов Г Я ",
-             9:"Героев славных имена  Сборник очерков",
-             10:"Доклад начальника академии об образовании академии"}
+             5:"Генералиссимус Суворов  Раковский Л И ",
+             6:"Василий Теркин  Твардовский А Т ",
+             7:"Навеки девятнадцатилетник  Бакланов Г Я ",
+             8:"Героев славных имена  Сборник очерков",
+             9:"Доклад начальника академии об образовании академии"}
     math = {1:"Задание 1 Область определения функции и логарифма",
             2:"Задание 2, 3, 4 Построение графика функции",
             3:"Задание 5 Четность и нечетность функции",
@@ -1037,7 +1099,7 @@ def get_count_report(bot, update):
     if type == "Литературные произведения":
         count = 1
         doklad = "<b>Ваши доклады:</b> \nЛитературные произведения:\n"
-        while count <= 10:
+        while count <= 9:
             book = books[count]
             book = "<b>" + book + ":</b> " + get_count_books(book, bot, update) + "\n"
             doklad = doklad + book
@@ -1067,10 +1129,12 @@ def get_count_report(bot, update):
 
 
 def get_help(bot, update):
+    SOS(bot)
     print("вот тут")
     #["Руководящие документы"],
     #["Отчеты"],
-    reply_keyboard = [["Кинофильмы"],
+    reply_keyboard = [["РУКОВОДЯЩИЕ ДОКУМЕНТЫ"],
+                      ["Кинофильмы"],
                       ["Литературные произведения"],
                       ["Математический анализ"],
                       ["Аналитическая геометрия и линейная алгебра"],
@@ -1082,23 +1146,40 @@ def get_help(bot, update):
 
 
 def get_type_help(bot, update):
+    SOS(bot)
     if bot.message.text == "Вернуться в меню!":
         print("Вы здесь")
         check_user = check_point(mdb, bot.effective_user)
         bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
         return ConversationHandler.END
     update.user_data['quest_category'] = bot.message.text
-    if bot.message.text == "Руководящие документы":
-        reply_keyboard = [["Федеральный закон О статусе военнослужащих"],
-                          ["Общевоинские уставы ВС РФ"],
-                          ["3. Письмо родителям (подпись родителей на обратной стороне)"],
-                          ["4. Служебное задания (проагитированные курсанты)"],
-                          ["5. Отпускной билет (снятие с учета)"],
+    print(bot.message.text)
+    if bot.message.text == "РУКОВОДЯЩИЕ ДОКУМЕНТЫ":
+        reply_keyboard = [["Общевоинские уставы ВС РФ"],
+                          ["Уголовный кодекс"],
+                          ["Вопросы прохождения службы"],
+                          ["О статусе военнослужащих"],
+                          ["Военная доктрина"],
+                          ["Инструктаж в отпуск"],
+                          ["КоАП РФ"],
+                          ["О вещевом обеспечении"],
+                          ["О воинской обязанности и военной службе"],
+                          ["О государственной тайне"],
+                          ["О продовольственном обеспечении"],
+                          ["О финансовом обеспечении"],
+                          ["Об обороне"],
+                          ["Памятка БДД"],
+                          ["Перечни рекомендуемых и обязательных книг и фильмов"],
+                          ["Пособие для ВВУЗОВ по COVID-19"],
+                          ["Приказ МО РФ 2017 по ВПД"],
+                          ["Проверка и оценка ФП"],
+                          ["Трудовой кодекс"],
+                          ["Пособие для ВВУЗОВ по COVID-19"],
                           ["Вернуться в меню!"]]
         bot.message.reply_text('Выберите документ!',
                                reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
                                                                 one_time_keyboard=True))
-    if bot.message.text == "Отчеты":
+    elif bot.message.text == "Отчеты":
         reply_keyboard = [["1. Отпускной билет (постановка на учет)"],
                           ["2. Бланк инструктажа (подпись родителей на обратной стороне)"],
                           ["3. Письмо родителям (подпись родителей на обратной стороне)"],
@@ -1181,7 +1262,6 @@ def get_type_help(bot, update):
                           ["Волоколамское шоссе. Бек А.А."],
                           ["Взять живым! Карпов В.В."],
                           ["Горячий снег. Бондарев Ю.В."],
-                          ["В окопах Сталинграда. Некрасов В.П."],
                           ["Генералиссимус Суворов. Раковский Л.И."],
                           ["Василий Теркин. Твардовский А.Т."],
                           ["Навеки девятнадцатилетник. Бакланов Г.Я."],
@@ -1195,6 +1275,7 @@ def get_type_help(bot, update):
     return "get_choice_help"
 
 def get_choice_help(bot, update):
+    SOS(bot)
     bot.message.reply_text('Материал может загружаться какое-то время!')
     print("Я оказался тут")
     if bot.message.text == "Вернуться в меню!":
@@ -1219,3 +1300,28 @@ def get_choice_help(bot, update):
     bot.message.reply_text('Если вы хотите добавить дополнительный материал, мы будем очень рады! Либо если хотите получить какие-то материалы в доступ напишите лейтенанту Широкопетлеву (8-911-170-18-75)')
     bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
     return ConversationHandler.END
+
+def sos(bot, update):
+    check_user = check_point(mdb, bot.effective_user)
+    bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
+    return ConversationHandler.END
+
+def exit(bot, update):
+    check_user = check_point(mdb, bot.effective_user)
+    bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
+    return ConversationHandler.END
+
+def get_rating_category(bot, update):
+    SOS(bot)
+    print("вот тут")
+    #["Руководящие документы"],
+    #["Отчеты"],
+    reply_keyboard = [["Кинофильмы"],
+                      ["Литературные произведения"],
+                      ["Математический анализ"],
+                      ["Аналитическая геометрия и линейная алгебра"],
+                      ["Вернуться в меню!"]]
+    bot.message.reply_text('Выберите категорию',
+                           reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
+                                                            one_time_keyboard=True))
+    return "get_type_rating"

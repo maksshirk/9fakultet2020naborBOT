@@ -16,8 +16,6 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
 def main():
     my_bot = Updater(TG_TOKEN)
     logging.info('Start_bot')
-    my_bot.dispatcher.add_handler(CommandHandler('test', get_rating_facts))
-    my_bot.dispatcher.add_handler(CommandHandler('test2', get_user_rating))
     my_bot.dispatcher.add_handler(CommandHandler('start', sms))
     my_bot.dispatcher.add_handler(MessageHandler(Filters.regex('Рейтинг курса по индивидуальным заданиям'), get_user_rating))
     my_bot.dispatcher.add_handler(MessageHandler(Filters.regex('Обновить рейтинг И.З. Отключает бот на 30 минут'), get_rating))
@@ -26,7 +24,8 @@ def main():
     my_bot.dispatcher.add_handler(MessageHandler(Filters.regex('Принять доклад о состоянии дел'), report))
     my_bot.dispatcher.add_handler(MessageHandler(Filters.regex('Принять доклад у курсантов о состоянии дел'), report_group))
     my_bot.dispatcher.add_handler(MessageHandler(Filters.regex('Показать обстановку на карте'), create_map))
-    my_bot.dispatcher.add_handler(MessageHandler(Filters.regex('Учет проверенных работ офицерами'), check_officer))
+    my_bot.dispatcher.add_handler(MessageHandler(Filters.regex('Учет проверенных работ офицерами/курсантами 5 курса'), check_officer))
+    my_bot.dispatcher.add_handler(MessageHandler(Filters.regex('Учет проверенных работ курсантами'), check_kursants))
     my_bot.dispatcher.add_handler(
         ConversationHandler(entry_points=[MessageHandler(Filters.regex('Проверить доклад'), check_doklad)],
                             states={
@@ -35,26 +34,49 @@ def main():
                                 "choice_doklad": [MessageHandler(Filters.text, choice_doklad)],
                                 "zagruzka_v_bd": [MessageHandler(Filters.text, zagruzka_v_bd)],
                                 "zagruzka_v_bd_problem": [MessageHandler(Filters.text, zagruzka_v_bd_problem)],
-                                "poehali": [MessageHandler(Filters.text, poehali)]
+                                "poehali": [MessageHandler(Filters.text, poehali)],
+                                "exit": [MessageHandler(Filters.text, exit)]
                             },
-                            fallbacks=[MessageHandler(Filters.regex('Вернуться в меню'), report_menu)]
+                            fallbacks=[CommandHandler('sos', sos)]
+                            ))
+    my_bot.dispatcher.add_handler(
+        ConversationHandler(entry_points=[MessageHandler(Filters.regex('Проверить работы'), check_doklad_kursant)],
+                            states={
+                                # Фамилия курсанта
+                                "type_doklad_kursant": [MessageHandler(Filters.text, type_doklad_kursant)],
+                                "choice_doklad_kursant": [MessageHandler(Filters.text, choice_doklad_kursant)],
+                                "zagruzka_v_bd_kursant": [MessageHandler(Filters.text, zagruzka_v_bd_kursant)],
+                                "zagruzka_v_bd_problem_kursant": [MessageHandler(Filters.text, zagruzka_v_bd_problem_kursant)],
+                                "poehali_kursant": [MessageHandler(Filters.text, poehali_kursant)]
+                            },
+                            fallbacks=[CommandHandler('sos', sos)]
                             ))
     my_bot.dispatcher.add_handler(
         ConversationHandler(entry_points=[MessageHandler(Filters.regex('Проверить статус докладов'), get_rock)],
                             states={
                                 # Фамилия курсанта
-                                "get_report": [MessageHandler(Filters.text, get_report)]
+                                "get_report": [MessageHandler(Filters.regex("Отчеты|Кинофильмы|Литературные произведени|Математический анализ|Аналитическая геометрия и линейная алгебра|Вернуться в меню!"), get_report)]
                             },
-                            fallbacks=[MessageHandler(Filters.regex('Вернуться в меню'), report_menu)]
+                            fallbacks=[CommandHandler('sos', sos)]
                             ))
     my_bot.dispatcher.add_handler(
         ConversationHandler(entry_points=[MessageHandler(Filters.regex('Руководящие документы, ссылки, материалы и виды отчетов'), get_help)],
                             states={
                                 # Фамилия курсанта
                                 "get_type_help": [MessageHandler(Filters.text, get_type_help)],
-                                "get_choice_help": [MessageHandler(Filters.text, get_choice_help)]
+                                "get_choice_help": [MessageHandler(Filters.text, get_choice_help)],
+                                "exit": [MessageHandler(Filters.text, exit)]
                             },
-                            fallbacks=[MessageHandler(Filters.regex('Вернуться в меню'), report_menu)]
+                            fallbacks=[CommandHandler('sos', sos)]
+                            ))
+    my_bot.dispatcher.add_handler(
+        ConversationHandler(entry_points=[MessageHandler(Filters.regex('Рейтинги по категориям'), get_rating_category)],
+                            states={
+                                # Фамилия курсанта
+                                "get_type_rating": [MessageHandler(Filters.text, get_choice_rating)],
+                                "get_choice_rating": [MessageHandler(Filters.text, get_choice_rating)]
+                            },
+                            fallbacks=[CommandHandler('sos', sos)]
                             ))
     my_bot.dispatcher.add_handler(
             ConversationHandler(entry_points=[MessageHandler(Filters.regex('Представиться'), user_start)],
@@ -69,9 +91,10 @@ def main():
                                     "user_name":     [MessageHandler(Filters.text, user_get_name)],
                                     # Отчество курсанта
                                     "user_middlename":     [MessageHandler(Filters.text, user_get_middlename)],
-                                    "user_phone": [MessageHandler(Filters.contact, user_get_phone)]
+                                    "user_phone": [MessageHandler(Filters.contact, user_get_phone)],
+                                    "exit": [MessageHandler(Filters.text, exit)]
                                          },
-                                         fallbacks=[]
+                                         fallbacks=[CommandHandler('sos', sos)]
                                 )
 
                                 )
@@ -88,9 +111,10 @@ def main():
                                 "user_name": [MessageHandler(Filters.text, user_get_name)],
                                 # Отчество курсанта
                                 "user_middlename": [MessageHandler(Filters.text, user_get_middlename)],
-                                "user_phone": [MessageHandler(Filters.contact, user_get_phone)]
+                                "user_phone": [MessageHandler(Filters.contact, user_get_phone)],
+                                "exit": [MessageHandler(Filters.text, exit)]
                             },
-                            fallbacks=[MessageHandler(Filters.regex('Вернуться в меню'), report_menu)]
+                            fallbacks=[CommandHandler('sos', sos)]
                             )
     )
 
@@ -99,9 +123,10 @@ def main():
                             states={
                                 # Фамилия курсанта
                                 "report_get": [MessageHandler(Filters.text, report_get)],
-                                "report_group": [MessageHandler(Filters.photo, report_photo)]
+                                "report_group": [MessageHandler(Filters.photo, report_photo)],
+                                "exit": [MessageHandler(Filters.text, exit)]
                             },
-                            fallbacks=[MessageHandler(Filters.regex('Вернуться в меню'), report_menu)]
+                            fallbacks=[CommandHandler('sos', sos)]
                             )
     )
 
@@ -112,10 +137,11 @@ def main():
                                 "quest_choice": [MessageHandler(Filters.text, quest_choice)],
                                 "quest_download_photo": [MessageHandler(Filters.photo, quest_download_photo)],
                                 # Имя курсанта
-                                "quest_download_document": [MessageHandler(Filters.document, quest_download_document)]
+                                "quest_download_document": [MessageHandler(Filters.document, quest_download_document)],
+                                "exit": [MessageHandler(Filters.text, exit)]
                                 # Имя курсанта
                             },
-                            fallbacks=[MessageHandler(Filters.regex('Вернуться в меню'), report_menu)]
+                            fallbacks=[CommandHandler('sos', sos)]
                             )
     )
     my_bot.dispatcher.add_handler(
@@ -123,18 +149,20 @@ def main():
                             states={
                                 "facts_choice": [MessageHandler(Filters.text, facts_choice)],
                                 "facts_ok": [MessageHandler(Filters.location, facts_ok)],
-                                "facts_problems": [MessageHandler(Filters.text, facts_problems)]
+                                "facts_problems": [MessageHandler(Filters.text, facts_problems)],
+                                "exit": [MessageHandler(Filters.text, exit)]
                             },
-                            fallbacks=[MessageHandler(Filters.regex('Вернуться в меню'), report_menu)]
+                            fallbacks=[CommandHandler('sos', sos)]
                             ))
     my_bot.dispatcher.add_handler(
         ConversationHandler(entry_points=[CommandHandler('report', facts_start)],
                             states={
                                 "facts_choice": [MessageHandler(Filters.text, facts_choice)],
                                 "facts_ok": [MessageHandler(Filters.location, facts_ok)],
-                                "facts_problems": [MessageHandler(Filters.text, facts_problems)]
+                                "facts_problems": [MessageHandler(Filters.text, facts_problems)],
+                                "exit": [MessageHandler(Filters.text, exit)]
                             },
-                            fallbacks=[MessageHandler(Filters.regex('Вернуться в меню'), report_menu)]
+                            fallbacks=[CommandHandler('sos', sos)]
                             )
     )
     my_bot.dispatcher.add_handler(
@@ -142,17 +170,19 @@ def main():
                             states={
                                 "facts_choice": [MessageHandler(Filters.text, facts_choice)],
                                 "facts_ok": [MessageHandler(Filters.location, facts_ok)],
-                                "facts_problems": [MessageHandler(Filters.text, facts_problems)]
+                                "facts_problems": [MessageHandler(Filters.text, facts_problems)],
+                                "exit": [MessageHandler(Filters.text, exit)]
                             },
-                            fallbacks=[MessageHandler(Filters.regex('Вернуться в меню'), report_menu)]
+                            fallbacks=[CommandHandler('sos', sos)]
                             )
     )
     my_bot.dispatcher.add_handler(
         ConversationHandler(entry_points=[MessageHandler(Filters.regex('Ввести адреса проведения отпуска'), lets_go)],
                             states={
-                                "put_address_from_coords": [MessageHandler(Filters.text, put_address_from_coords)]
+                                "put_address_from_coords": [MessageHandler(Filters.text, put_address_from_coords)],
+                                "exit": [MessageHandler(Filters.text, exit)]
                             },
-                            fallbacks=[MessageHandler(Filters.regex('Вернуться в меню'), report_menu)]
+                            fallbacks=[CommandHandler('sos', sos)]
                             )
     )
     my_bot.dispatcher.add_handler(
@@ -187,9 +217,10 @@ def main():
                                 # Телефон друга (брата, сестры) курсанта
                                 "user_phone_other": [MessageHandler(Filters.text, anketa_get_phone_other)],
                                 # Адрес друга (брата, сестры)
-                                "user_address_other": [MessageHandler(Filters.text, anketa_get_address_other)]
+                                "user_address_other": [MessageHandler(Filters.text, anketa_get_address_other)],
+                                "exit": [MessageHandler(Filters.text, exit)]
                                      },
-                                     fallbacks=[MessageHandler(Filters.regex('Вернуться в меню'), report_menu)]
+                                     fallbacks=[CommandHandler('sos', sos)]
                             )
 
                             )
@@ -226,14 +257,20 @@ def main():
                                 # Телефон друга (брата, сестры) курсанта
                                 "user_phone_other": [MessageHandler(Filters.text, anketa_get_phone_other)],
                                 # Адрес друга (брата, сестры)
-                                "user_address_other": [MessageHandler(Filters.text, anketa_get_address_other)]
+                                "user_address_other": [MessageHandler(Filters.text, anketa_get_address_other)],
+                                "exit": [MessageHandler(Filters.text, exit)]
                             },
-                            fallbacks=[MessageHandler(Filters.regex('Вернуться в меню'), report_menu)]
+                            fallbacks=[CommandHandler('sos', sos)]
                             )
 
     )
+
     my_bot.start_polling()
     my_bot.idle()
 
 if __name__=="__main__":
     main()
+
+def error(bot, update, error):
+    logging.warning('Update "%s" caused error "%s"', update, error)
+

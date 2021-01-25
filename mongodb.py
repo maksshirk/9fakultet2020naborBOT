@@ -20,6 +20,7 @@ import haversine
 import uuid
 import os,shutil
 
+
 def search_or_save_user(mdb, effective_user, message):
     user = mdb.users.find_one({"user_id": effective_user.id})
     if not user:
@@ -181,7 +182,9 @@ def save_user_report(mdb, user, report_category, unit_report, time, uid):
     )
     return user
 
-def save_kursant_anketa(mdb, user, user_data):
+def save_kursant_anketa(mdb, user, user_data, update):
+    check_present = 1
+    if update.user_data['user_group'] == "Комиссия": check_present = 6
     mdb.users.update_one(
         {'_id': user['_id']},
         {'$set': {'Present': {'user_group': user_data['user_group'],
@@ -190,7 +193,8 @@ def save_kursant_anketa(mdb, user, user_data):
                              'user_name': user_data['user_name'],
                              'user_middlename': user_data['user_middlename'],
                              'user_phone': user_data['user_phone'],
-                             'check_present': 1
+                             'check_present': check_present,
+                             "count": 0
                              }
                   }
          }
@@ -198,6 +202,7 @@ def save_kursant_anketa(mdb, user, user_data):
     return user
 
 def save_user_anketa(mdb, user, user_data):
+
     mdb.users.update_one(
         {'_id': user['_id']},
         {'$set': {'SOS':     {'user_lastname_mother': user_data['user_lastname_mother'],
@@ -839,13 +844,14 @@ def test (bot, update):
 
 
 def get_status_film(film, bot, update):
+    SOS(bot)
     doklad = "Такие дела"
     number = "number " + film
     user = mdb.users.find_one({"user_id": bot.effective_user.id})
     try:
         number_of_film = user["Report"]["Кинофильмы"][film][number]["number"]
-        i = 1
-        while i <= number_of_film:
+        i = number_of_film
+        while i >= 1:
             dock = str(i) + " " + film
             if user["Report"]["Кинофильмы"][film][dock]["check"] == 2 or user["Report"]["Кинофильмы"][film][dock]["check"] == "2":
                 try:
@@ -858,19 +864,20 @@ def get_status_film(film, bot, update):
                 return doklad
             if user["Report"]["Кинофильмы"][film][dock]["check"] == 1 or user["Report"]["Кинофильмы"][film][dock]["check"] == "1":
                 doklad = "<ins>✅Доклад принят</ins>"
-            i = i + 1
+            i = i - 1
     except Exception as ex:
         doklad = "⚠Доклад не представлен"
     return doklad
 
 def get_status_books(books, bot, update):
+    SOS(bot)
     doklad = "Такие дела"
     number = "number " + books
     user = mdb.users.find_one({"user_id": bot.effective_user.id})
     try:
         number_of_film = user["Report"]["Литературные произведения"][books][number]["number"]
-        i = 1
-        while i <= number_of_film:
+        i = number_of_film
+        while i >= 1:
             dock = str(i) + " " + books
             if user["Report"]["Литературные произведения"][books][dock]["check"] == 2 or user["Report"]["Литературные произведения"][books][dock]["check"] == "2":
                 try:
@@ -883,19 +890,20 @@ def get_status_books(books, bot, update):
                 return doklad
             if user["Report"]["Литературные произведения"][books][dock]["check"] == 1 or user["Report"]["Литературные произведения"][books][dock]["check"] == "1":
                 doklad = "<ins>✅Доклад принят</ins>"
-            i = i + 1
+            i = i - 1
     except Exception as ex:
         doklad = "⚠Доклад не представлен"
     return doklad
 
 def get_status_mathematic(math, bot, update):
+    SOS(bot)
     doklad = "Такие дела"
     number = "number " + math
     user = mdb.users.find_one({"user_id": bot.effective_user.id})
     try:
         number_of_film = user["Report"]["Математический анализ"][math][number]["number"]
-        i = 1
-        while i <= number_of_film:
+        i = number_of_film
+        while i >= 1:
             dock = str(i) + " " + math
             if user["Report"]["Математический анализ"][math][dock]["check"] == 2 or user["Report"]["Математический анализ"][math][dock]["check"] == "2":
                 try:
@@ -908,19 +916,20 @@ def get_status_mathematic(math, bot, update):
                 return doklad
             if user["Report"]["Математический анализ"][math][dock]["check"] == 1 or user["Report"]["Математический анализ"][math][dock]["check"] == "1":
                 doklad = "<ins>✅Доклад принят</ins>"
-            i = i + 1
+            i = i - 1
     except Exception as ex:
         doklad = "⚠Доклад не представлен"
     return doklad
 
 def get_status_analitic(analitic, bot, update):
+    SOS(bot)
     doklad = "Такие дела"
     number = "number " + analitic
     user = mdb.users.find_one({"user_id": bot.effective_user.id})
     try:
         number_of_film = user["Report"]["Аналитическая геометрия и линейная алгебра"][analitic][number]["number"]
-        i = 1
-        while i <= number_of_film:
+        i = number_of_film
+        while i >= 1:
             dock = str(i) + " " + analitic
             if user["Report"]["Аналитическая геометрия и линейная алгебра"][analitic][dock]["check"] == 2 or user["Report"]["Аналитическая геометрия и линейная алгебра"][analitic][dock]["check"] == "2":
                 try:
@@ -933,19 +942,20 @@ def get_status_analitic(analitic, bot, update):
                 return doklad
             if user["Report"]["Аналитическая геометрия и линейная алгебра"][analitic][dock]["check"] == 1 or user["Report"]["Аналитическая геометрия и линейная алгебра"][analitic][dock]["check"] == "1":
                 doklad = "<ins>✅Доклад принят</ins>"
-            i = i + 1
+            i = i - 1
     except Exception as ex:
         doklad = "⚠Доклад не представлен"
     return doklad
 
 def get_status_reps(reps, bot, update):
+    SOS(bot)
     doklad = "Такие дела"
     number = "number " + reps
     user = mdb.users.find_one({"user_id": bot.effective_user.id})
     try:
         number_of_film = user["Report"]["Отчеты"][reps][number]["number"]
-        i = 1
-        while i <= number_of_film:
+        i = number_of_film
+        while i >= 1:
             dock = str(i) + " " + reps
             if user["Report"]["Отчеты"][reps][dock]["check"] == 2 or user["Report"]["Отчеты"][reps][dock]["check"] == "2":
                 try:
@@ -958,7 +968,7 @@ def get_status_reps(reps, bot, update):
                 return doklad
             if user["Report"]["Отчеты"][reps][dock]["check"] == 1 or user["Report"]["Отчеты"][reps][dock]["check"] == "1":
                 doklad = "<ins>✅Доклад принят</ins>"
-            i = i + 1
+            i = i - 1
     except Exception as ex:
         doklad = "⚠Доклад не представлен"
     return doklad
@@ -972,8 +982,8 @@ def get_rating_film(film, user_id, update):
     user = mdb.users.find_one({"user_id": user_id})
     try:
         number_of_film = user["Report"]["Кинофильмы"][film][number]["number"]
-        i = 1
-        while i <= number_of_film:
+        i = number_of_film
+        while i >= 1:
             dock = str(i) + " " + film
             if user["Report"]["Кинофильмы"][film][dock]["check"] == 2 or user["Report"]["Кинофильмы"][film][dock]["check"] == "2":
                 doklad = "<ins>⛔Доклад не принят (Не тот документ, списан у другого курсанта, мало предложений, не подписан, не озаглавлен или невозможно разобрать подчерк). Исправьте и загрузите заново</ins>"
@@ -983,7 +993,7 @@ def get_rating_film(film, user_id, update):
                 return doklad
             if user["Report"]["Кинофильмы"][film][dock]["check"] == 1 or user["Report"]["Кинофильмы"][film][dock]["check"] == "1":
                 doklad = "<ins>✅Доклад принят</ins>"
-            i = i + 1
+            i = i - 1
     except Exception as ex:
         doklad = "⚠Доклад не представлен"
     return doklad
@@ -994,8 +1004,8 @@ def get_rating_books(books, user_id, update):
     user = mdb.users.find_one({"user_id": user_id})
     try:
         number_of_film = user["Report"]["Литературные произведения"][books][number]["number"]
-        i = 1
-        while i <= number_of_film:
+        i = number_of_film
+        while i >= 1:
             dock = str(i) + " " + books
             if user["Report"]["Литературные произведения"][books][dock]["check"] == 2 or user["Report"]["Литературные произведения"][books][dock]["check"] == "2":
                 doklad = "<ins>⛔Доклад не принят (Не тот документ, списан у другого курсанта, мало предложений, не подписан, не озаглавлен или невозможно разобрать подчерк). Исправьте и загрузите заново</ins>"
@@ -1005,7 +1015,7 @@ def get_rating_books(books, user_id, update):
                 return doklad
             if user["Report"]["Литературные произведения"][books][dock]["check"] == 1 or user["Report"]["Литературные произведения"][books][dock]["check"] == "1":
                 doklad = "<ins>✅Доклад принят</ins>"
-            i = i + 1
+            i = i - 1
     except Exception as ex:
         doklad = "⚠Доклад не представлен"
     return doklad
@@ -1016,8 +1026,8 @@ def get_rating_mathematic(math, user_id, update):
     user = mdb.users.find_one({"user_id": user_id})
     try:
         number_of_film = user["Report"]["Математический анализ"][math][number]["number"]
-        i = 1
-        while i <= number_of_film:
+        i = number_of_film
+        while i >= 1:
             dock = str(i) + " " + math
             if user["Report"]["Математический анализ"][math][dock]["check"] == 2 or user["Report"]["Математический анализ"][math][dock]["check"] == "2":
                 doklad = "<ins>⛔Доклад не принят (Не тот документ, списан у другого курсанта, мало предложений, не подписан, не озаглавлен или невозможно разобрать подчерк). Исправьте и загрузите заново</ins>"
@@ -1027,7 +1037,7 @@ def get_rating_mathematic(math, user_id, update):
                 return doklad
             if user["Report"]["Математический анализ"][math][dock]["check"] == 1 or user["Report"]["Математический анализ"][math][dock]["check"] == "1":
                 doklad = "<ins>✅Доклад принят</ins>"
-            i = i + 1
+            i = i - 1
     except Exception as ex:
         doklad = "⚠Доклад не представлен"
     return doklad
@@ -1038,8 +1048,8 @@ def get_rating_analitic(analitic, user_id, update):
     user = mdb.users.find_one({"user_id": user_id})
     try:
         number_of_film = user["Report"]["Аналитическая геометрия и линейная алгебра"][analitic][number]["number"]
-        i = 1
-        while i <= number_of_film:
+        i = number_of_film
+        while i >= 1:
             dock = str(i) + " " + analitic
             if user["Report"]["Аналитическая геометрия и линейная алгебра"][analitic][dock]["check"] == 2 or user["Report"]["Аналитическая геометрия и линейная алгебра"][analitic][dock]["check"] == "2":
                 doklad = "<ins>⛔Доклад не принят (Не тот документ, списан у другого курсанта, мало предложений, не подписан, не озаглавлен или невозможно разобрать подчерк). Исправьте и загрузите заново</ins>"
@@ -1049,7 +1059,7 @@ def get_rating_analitic(analitic, user_id, update):
                 return doklad
             if user["Report"]["Аналитическая геометрия и линейная алгебра"][analitic][dock]["check"] == 1 or user["Report"]["Аналитическая геометрия и линейная алгебра"][analitic][dock]["check"] == "1":
                 doklad = "<ins>✅Доклад принят</ins>"
-            i = i + 1
+            i = i - 1
     except Exception as ex:
         doklad = "⚠Доклад не представлен"
     return doklad
@@ -1060,8 +1070,8 @@ def get_rating_reps(reps, user_id, update):
     user = mdb.users.find_one({"user_id": user_id})
     try:
         number_of_film = user["Report"]["Отчеты"][reps][number]["number"]
-        i = 1
-        while i <= number_of_film:
+        i = number_of_film
+        while i >= 1:
             dock = str(i) + " " + reps
             if user["Report"]["Отчеты"][reps][dock]["check"] == 2 or user["Report"]["Отчеты"][reps][dock]["check"] == "2":
                 doklad = "<ins>⛔Доклад не принят (Не тот документ, списан у другого курсанта, мало предложений, не подписан, не озаглавлен или невозможно разобрать подчерк). Исправьте и загрузите заново</ins>"
@@ -1071,7 +1081,7 @@ def get_rating_reps(reps, user_id, update):
                 return doklad
             if user["Report"]["Отчеты"][reps][dock]["check"] == 1 or user["Report"]["Отчеты"][reps][dock]["check"] == "1":
                 doklad = "<ins>✅Доклад принят</ins>"
-            i = i + 1
+            i = i - 1
     except Exception as ex:
         doklad = "⚠Доклад не представлен"
     return doklad
@@ -1106,12 +1116,11 @@ def get_rating(bot, update):
              2: "Волоколамское шоссе  Бек А А ",
              3: "Взять живым! Карпов В В ",
              4: "Горячий снег  Бондарев Ю В ",
-             5: "В окопах Сталинграда  Некрасов В П ",
-             6: "Генералиссимус Суворов  Раковский Л И ",
-             7: "Василий Теркин  Твардовский А Т ",
-             8: "Навеки девятнадцатилетник  Бакланов Г Я ",
-             9: "Героев славных имена  Сборник очерков",
-             10: "Доклад начальника академии об образовании академии"}
+             5: "Генералиссимус Суворов  Раковский Л И ",
+             6: "Василий Теркин  Твардовский А Т ",
+             7: "Навеки девятнадцатилетник  Бакланов Г Я ",
+             8: "Героев славных имена  Сборник очерков",
+             9: "Доклад начальника академии об образовании академии"}
     math = {1: "Задание 1 Область определения функции и логарифма",
             2: "Задание 2, 3, 4 Построение графика функции",
             3: "Задание 5 Четность и нечетность функции",
@@ -1204,7 +1213,7 @@ def get_rating(bot, update):
         book_rate_problem = 0
         book_rate_bad = 0
         count = 1
-        while count <= 10:
+        while count <= 9:
             book = books[count]
             doklad = get_rating_books(book, bot, update)
             if doklad == "<ins>✅Доклад принят</ins>": book_rate_ok = book_rate_ok + 1
@@ -1285,7 +1294,7 @@ def get_user_rating(bot, update):
              "Место - Группа - Ф.И. - Принятые доклады✅/На обработке⏳/Не представленные⚠/Непринятые⛔\n Поехали: \n"
     count = 1
     cur = mdb.users.find()
-    cur = cur.sort("Present.rate_bad", 1)
+    cur = cur.sort([("Present.user_group", 1),("Present.rate_bad", 1),("Present.rate_problem", 1)])
     for doc in cur:
         try:
             try:
@@ -1378,11 +1387,11 @@ def get_user_rating(bot, update):
     bot.message.reply_text(rating_group, parse_mode=ParseMode.HTML)
     rating_group= "<b>Учет докладов групп </b>представлен в виде:\n" \
              "Группа - Процент(%) принятых докладов✅/Не обработанных⏳/Не представленных⚠/Непринятых⛔\n"
-    rating_group = rating_group + "901 учебная группа - " + str(round(rating_901_ok * 100 / (68 * 24),2)) + "%✅/ " + str(round(rating_901_process * 100 / (68 * 24),2)) + "%⏳/ " + str(round(rating_901_bad * 100 / (68 * 24),2)) + "%⚠/ "  + str(round(rating_901_problem * 100 / (68 * 24),2)) + "%⛔\n" + \
+    rating_group = rating_group + "901 учебная группа - " + str(round(rating_901_ok * 100 / (68 * 23),2)) + "%✅/ " + str(round(rating_901_process * 100 / (68 * 23),2)) + "%⏳/ " + str(round(rating_901_bad * 100 / (68 * 23),2)) + "%⚠/ "  + str(round(rating_901_problem * 100 / (68 * 23),2)) + "%⛔\n" + \
                    "903 учебная группа - " + str(round(rating_903_ok * 100 / (68 * 15),2)) + "%✅/ " + str(round(rating_903_process * 100 / (68 * 15),2)) + "%⏳/ " + str(round(rating_903_bad * 100 / (68 * 15),2)) + "%⚠/ "  + str(round(rating_903_problem * 100 / (68 * 15),2)) + "%⛔\n" + \
                    "904 учебная группа - " + str(round(rating_904_ok * 100 / (68 * 15),2)) + "%✅/ " + str(round(rating_904_process * 100 / (68 * 15),2)) + "%⏳/ " + str(round(rating_904_bad * 100 / (68 * 15),2)) + "%⚠/ "  + str(round(rating_904_problem * 100 / (68 * 15),2)) + "%⛔\n" + \
-                   "905-1 учебная группа - " + str(round(rating_905_1_ok * 100 / (68 * 30),2)) + "%✅/ " + str(round(rating_905_1_process * 100 / (68 * 30),2)) + "%⏳/ " + str(round(rating_905_1_bad * 100 / (68 * 30),2)) + "%⚠/ "  + str(round(rating_905_1_problem * 100 / (68 * 30),2)) + "%⛔\n" + \
-                   "905-2 учебная группа - " + str(round(rating_905_2_ok * 100 / (68 * 30),2)) + "%✅/ " + str(round(rating_905_2_process * 100 / (68 * 30),2)) + "%⏳/ " + str(round(rating_905_2_bad * 100 / (68 * 30),2)) + "%⚠/ "  + str(round(rating_905_2_problem * 100 / (68 * 30),2)) + "%⛔\n" + \
+                   "905-1 учебная группа - " + str(round(rating_905_1_ok * 100 / (68 * 29),2)) + "%✅/ " + str(round(rating_905_1_process * 100 / (68 * 29),2)) + "%⏳/ " + str(round(rating_905_1_bad * 100 / (68 * 29),2)) + "%⚠/ "  + str(round(rating_905_1_problem * 100 / (68 * 29),2)) + "%⛔\n" + \
+                   "905-2 учебная группа - " + str(round(rating_905_2_ok * 100 / (68 * 29),2)) + "%✅/ " + str(round(rating_905_2_process * 100 / (68 * 29),2)) + "%⏳/ " + str(round(rating_905_2_bad * 100 / (68 * 29),2)) + "%⚠/ "  + str(round(rating_905_2_problem * 100 / (68 * 29),2)) + "%⛔\n" + \
                    "906 учебная группа - " + str(round(rating_906_ok * 100 / (68 * 15),2)) + "%✅/ " + str(round(rating_906_process * 100 / (68 * 15),2)) + "%⏳/ " + str(round(rating_906_bad * 100 / (68 * 15),2)) + "%⚠/ "  + str(round(rating_906_problem * 100 / (68 * 15),2)) + "%⛔\n"
     bot.message.reply_text(rating_group, parse_mode=ParseMode.HTML)
     bot.message.reply_text("Рейтинг представлен🏆!", parse_mode=ParseMode.HTML)
@@ -1476,6 +1485,7 @@ def find_report_group(bot, mdb, user_group):
 
 
 def check_doklad(bot, update):
+    SOS(bot)
     reply_keyboard = [["Отчеты"],
                       ["Кинофильмы"],
                       ["Литературные произведения"],
@@ -1488,6 +1498,7 @@ def check_doklad(bot, update):
     return "type_doklad"
 
 def type_doklad(bot, update):
+    SOS(bot)
     if bot.message.text == "Вернуться в меню!":
         print("Вы здесь")
         check_user = check_point(mdb, bot.effective_user)
@@ -1578,7 +1589,6 @@ def type_doklad(bot, update):
                           ["Волоколамское шоссе. Бек А.А."],
                           ["Взять живым! Карпов В.В."],
                           ["Горячий снег. Бондарев Ю.В."],
-                          ["В окопах Сталинграда. Некрасов В.П."],
                           ["Генералиссимус Суворов. Раковский Л.И."],
                           ["Василий Теркин. Твардовский А.Т."],
                           ["Навеки девятнадцатилетник. Бакланов Г.Я."],
@@ -1592,6 +1602,7 @@ def type_doklad(bot, update):
     return "choice_doklad"
 
 def choice_doklad(bot, update):
+    SOS(bot)
     print("Я оказался тут")
     if bot.message.text == "Вернуться в меню!":
         print("Вы здесь")
@@ -1632,12 +1643,23 @@ def choice_doklad(bot, update):
                     if searchstring in f and os.path.isfile(os.path.join(src_dir, f)):
                         photo = open(os.path.join(src_dir, f), 'rb')
                         update.bot.send_photo(chat_id=bot.message.chat.id, photo=photo)
+                Report = "Report." + report_category + "." + unit_report + "." + dock + ".check"
+                Reason = "Report." + report_category + "." + unit_report + "." + dock + ".reason"
+                Officer = "Report." + report_category + "." + unit_report + "." + dock + ".officer"
+                mdb.users.update_one({"user_id": user["user_id"]},
+                                     {"$set": {Report: 2,
+                                               Reason: "Отправьте доклад повторно. Техническая неполадка",
+                                               Officer: str(bot.message.chat.id)}})
+                Report = "Report." + report_category + "." + unit_report + ".check_report"
+                Officer = "Report." + report_category + "." + unit_report + ".officer"
+                mdb.users.update_one({"user_id": user["user_id"]},
+                                     {"$set": {Report: 2,
+                                               Officer: str(bot.message.chat.id)}})
                 i = i + 1
-
             reply_keyboard = [["Доклад принят. Приступить к следующему"],
                               ["Доклад не принят."],
                               ["Я устал. Вернуться в меню!"]]
-            bot.message.reply_text(user["Present"]["user_group"] + " " + user["Present"]["user_lastname"] + ' ' + title, reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True, one_time_keyboard=True))
+            bot.message.reply_text(user["Present"]["user_group"] + " " + user["Present"]["user_lastname"] + ' ' + user["Present"]["user_name"] + " " + user["Present"]["user_middlename"] +'\n' + user["Present"]["user_phone"] + "\n" + title, reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True, one_time_keyboard=True))
             return "zagruzka_v_bd"
         except Exception as ex:
             check_user = check_point(mdb, bot.effective_user)
@@ -1668,6 +1690,7 @@ def choice_doklad(bot, update):
 
 
 def zagruzka_v_bd(bot, update):
+    SOS(bot)
     if bot.message.text == "Я устал. Вернуться в меню!":
         check_user = check_point(mdb, bot.effective_user)
         bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
@@ -1678,10 +1701,11 @@ def zagruzka_v_bd(bot, update):
         type = type.replace('.', ' ')
         title = title.replace('.', ' ')
         Report = "Report." + type + "." + title + ".check_report"
+        Officer = "Report." + type + "." + title + ".officer"
         user = update.user_data['user']
         mdb.users.update_one ({"user_id": user["user_id"]},
-                              {"$set":{Report: 1
-                                       }})
+                              {"$set":{Report: 1,
+                                       Officer: str(bot.message.chat.id)}})
         print("3 здесь")
         number = "number " + title
         try:
@@ -1692,8 +1716,13 @@ def zagruzka_v_bd(bot, update):
                 print("2 здесь")
                 dock = str(i) + " " + title
                 Report = "Report." + type + "." + title + "." + dock + ".check"
+                Reason = "Report." + type + "." + title + "." + dock + ".reason"
+                Officer = "Report." + type + "." + title + "." + dock + ".officer"
                 mdb.users.update_one({"user_id": user["user_id"]},
-                                     {"$set":{Report: 1}})
+                                     {"$set":{Report: 1,
+                                              Officer: str(bot.message.chat.id)}})
+                mdb.users.update_one({"user_id": user["user_id"]},
+                                     {"$unset":{Reason: 1}})
                 i = i + 1
         except Exception as ex:
             print("Эх, плохо то как")
@@ -1720,9 +1749,10 @@ def zagruzka_v_bd(bot, update):
         title = title.replace('.', ' ')
         Report = "Report." + type + "." + title + ".check_report"
         user = update.user_data['user']
+        Officer = "Report." + type + "." + title + ".officer"
         mdb.users.update_one({"user_id": user["user_id"]},
-                             {"$set": {Report: 2
-                                       }})
+                             {"$set": {Report: 2,
+                                       Officer: str(bot.message.chat.id)}})
         number = "number " + title
         try:
             number_of_type = user["Report"][type][title][number]["number"]
@@ -1731,22 +1761,26 @@ def zagruzka_v_bd(bot, update):
                 dock = str(i) + " " + title
                 Report = "Report." + type + "." + title + "." + dock + ".check"
                 Reason = "Report." + type + "." + title + "." + dock + ".reason"
+                Officer = "Report." + type + "." + title + "." + dock + ".officer"
                 mdb.users.update_one({"user_id": user["user_id"]},
-                                     {"$set": {Report: 2}})
+                                     {"$set": {Report: 2,
+                                               Officer: str(bot.message.chat.id)}})
                 mdb.users.update_one({"user_id": user["user_id"]},
                                      {"$unset": {Reason: 1}})
                 i = i + 1
         except Exception as ex:
             print("Эх, плохо то как")
         reply_keyboard = [["Доклад неполный (менее 30 предложений). Необходимо переписать. "],
-                          ["Доклад не оформлен (нет подписан, нет заглавия). "],
+                          ["Доклад не оформлен (не подписан, нет заглавия). "],
+                          ["Работа выполнено неаккуратно (без линейки, помарки) "],
                           ["Доклад невозможно разобрать. Сделать фото, либо переписать. "],
                           ["Доклад списан у товарища. Переписать. "],
                           ["Я устал. Не спрашивайте таких вопросов. Вернуться в меню!"]]
-        bot.message.reply_text("Выберите причину", reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,one_time_keyboard=True))
+        bot.message.reply_text("Выберите причину либо ❗ напишите своими словами и отправьте сообщение.", reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,one_time_keyboard=True))
         return "zagruzka_v_bd_problem"
 
 def zagruzka_v_bd_problem(bot, update):
+    SOS(bot)
     if bot.message.text == "Я устал. Не спрашивайте таких вопросов. Вернуться в меню!":
         check_user = check_point(mdb, bot.effective_user)
         bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
@@ -1771,9 +1805,11 @@ def zagruzka_v_bd_problem(bot, update):
             dock = str(i) + " " + title
             Report = "Report." + type + "." + title + "." + dock + ".check"
             Reason = "Report." + type + "." + title + "." + dock + ".reason"
+            Officer = "Report." + type + "." + title + "." + dock + ".officer"
             mdb.users.update_one({"user_id": user["user_id"]},
                                  {"$set": {Report: 2,
-                                           Reason: reason}})
+                                           Reason: reason,
+                                           Officer: str(bot.message.chat.id)}})
             i = i + 1
     except Exception as ex:
         print("Эх, плохо то как")
@@ -1791,6 +1827,7 @@ def zagruzka_v_bd_problem(bot, update):
 
 
 def poehali (bot, update):
+    SOS(bot)
     if bot.message.text == "Вернуться в меню!":
         print("Вы здесь")
         check_user = check_point(mdb, bot.effective_user)
@@ -1824,12 +1861,27 @@ def poehali (bot, update):
                         photo = open(os.path.join(src_dir, f), 'rb')
                         update.bot.send_photo(chat_id=bot.message.chat.id, photo=photo)
                 i = i + 1
-
+                Report = "Report." + report_category + "." + unit_report + "." + dock + ".check"
+                Reason = "Report." + report_category + "." + unit_report + "." + dock + ".reason"
+                Officer = "Report." + report_category + "." + unit_report + "." + dock + ".officer"
+                print("Сейчас обновлю")
+                mdb.users.update_one({"user_id": user["user_id"]},
+                                     {"$set": {Report: 2,
+                                               Reason: "Отправьте доклад повторно. Техническая неполадка",
+                                               Officer: str(bot.message.chat.id)}})
+                Report = "Report." + report_category + "." + unit_report + ".check_report"
+                Officer = "Report." + report_category + "." + unit_report + ".officer"
+                mdb.users.update_one({"user_id": user["user_id"]},
+                                     {"$set": {Report: 2,
+                                               Officer: str(bot.message.chat.id)}})
             reply_keyboard = [["Доклад принят. Приступить к следующему"],
                               ["Доклад не принят."],
                               ["Я устал. Вернуться в меню!"]]
-            bot.message.reply_text(user["Present"]["user_group"] + " " + user["Present"]["user_lastname"] + ' ' + title , reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
-                                                                              one_time_keyboard=True))
+            bot.message.reply_text(
+                user["Present"]["user_group"] + " " + user["Present"]["user_lastname"] + ' ' + user["Present"][
+                    "user_name"] + " " + user["Present"]["user_middlename"] + '\n' + user["Present"][
+                    "user_phone"] + "\n" + title,
+                reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True, one_time_keyboard=True))
             return "zagruzka_v_bd"
         except Exception as ex:
             check_user = check_point(mdb, bot.effective_user)
@@ -1860,13 +1912,25 @@ def poehali (bot, update):
 
 
 def check_officer(bot, update):
+    SOS(bot)
     cur_count = mdb.users.find({"Present.check_present": 5})
     text = ""
     for doc in cur_count:
         count = str(doc["Present"]["count"])
         text = text + doc["Present"]["user_lastname"] + " " + doc["Present"]["user_name"] + " " + doc["Present"]["user_middlename"] + " проверил<b> " + count + " </b>работ(ы, у)\n"
     bot.message.reply_text(text, parse_mode=telegram.ParseMode.HTML)
-
+    cur_count = mdb.users.find({"Present.check_present": 6})
+    text = ""
+    for doc in cur_count:
+        count = str(doc["Present"]["count"])
+        text = text + doc["Present"]["user_lastname"] + " " + doc["Present"]["user_name"] + " " + doc["Present"]["user_middlename"] + " проверил<b> " + count + " </b>работ(ы, у)\n"
+    bot.message.reply_text(text, parse_mode=telegram.ParseMode.HTML)
+    cur_count = mdb.users.find({"Present.check_present": 7})
+    text = ""
+    for doc in cur_count:
+        count = str(doc["Present"]["count"])
+        text = text + doc["Present"]["user_lastname"] + " " + doc["Present"]["user_name"] + " " + doc["Present"]["user_middlename"] + " проверил<b> " + count + " </b>работ(ы, у)\n"
+    bot.message.reply_text(text, parse_mode=telegram.ParseMode.HTML)
 
 def get_count_film(film, bot, update):
     doklad = "Такие дела"
@@ -2144,3 +2208,523 @@ def get_user_rating_facts(bot, update):
     bot.message.reply_text(your_facts, parse_mode=ParseMode.HTML)
     bot.message.reply_text("Рейтинг представлен🏆!", parse_mode=ParseMode.HTML)
     print(str(bot.effective_user.id) + " посмотрел рейтинг")
+
+def SOS(bot):
+    if bot.message.text == "/sos":
+        print("Вы здесь")
+        check_user = check_point(mdb, bot.effective_user)
+        bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
+        return ConversationHandler.END
+
+def type_doklad_kursant (bot, update):
+    SOS(bot)
+    if bot.message.text == "Вернуться в меню!":
+        print("Вы здесь")
+        check_user = check_point(mdb, bot.effective_user)
+        bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
+        return ConversationHandler.END
+    update.user_data['quest_category'] = bot.message.text
+
+    if bot.message.text == "Математический анализ":
+        reply_keyboard = [["Задание 1 Область определения функции и логарифма"],
+                          ["Задание 2, 3, 4 Построение графика функции"],
+                          ["Задание 5 Четность и нечетность функции"],
+                          ["Задание 6 Экстремумы функции без использования производной"],
+                          ["Задание 7 Периодические функции"],
+                          ["Задания 8, 9, 10, 11, 12, 13 Вычисление пределов и правило Лопиталя"],
+                          ["Задания 14 15 Непрерывность функции и точки разрыва"],
+                          ["Задания 16, 17, 19, 20, 21, 22 Дифференцирование сложных функций"],
+                          ["Задание 18 Значение производной в данной точке"],
+                          ["Задание 23 Приближенные вычисления с помощью производной"],
+                          ["Задание 24 Производная функции, заданной параметрическим способом"],
+                          ["Задания 25, 28 Производная неявной функции"],
+                          ["Задание 26 Уравнение касательной и нормали к графику функции"],
+                          ["Задание 27, 33 Производная второго порядка, выпуклости и точки перегиба"],
+                          ["Задание 29 Правило Лопиталя"],
+                          ["Задание 30 Нахождение асимптот графиков функций"],
+                          ["Задание 31 Нахождение интервалов монотонности"],
+                          ["Задание 32 Экстремумы фнукций"],
+                          ["Задание 34,34 Исследование функции, применение производной к построению графиков функций"],
+                          ["Вернуться в меню!"]]
+        bot.message.reply_text('Выберите задание',
+                               reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
+                                                                one_time_keyboard=True))
+    elif bot.message.text == "Аналитическая геометрия и линейная алгебра":
+        reply_keyboard = [["Задание 1-4 Задача 1-1 Комплексные числа"],
+                          ["Задание 1-4 Задача 1-2 Разложение на множители"],
+                          ["Задание 3-5 Задача 3-1 Векторы, их произведения"],
+                          ["Задание 3-5 Задача 3-2 Длина и угол между векторами"],
+                          ["Задание 4-2 Задача 4-1 Уравнение прямой"],
+                          ["Задание 6-2 Задача 6-1 Уравнение прямой проходящей через 2 точки"],
+                          ["Задание 6-2 Задача 6-2 Уравнение параллельной прямой"],
+                          ["Задание 6-2 Задача 6-3 Уравнение плоскости"],
+                          ["Задание 6-2 Задача 6-7 Проекция точки на плоскость"],
+                          ["Задание 7-2 Задачи 7-1,7-2 Поверхности второго порядка"],
+                          ["Задание 9-5 Задача 9-1 Собственные числа и векторы матрицы"],
+                          ["Задание 9-5 Задача 9-2 Собственные значения и векторы линейного оператора"],
+                          ["Вернуться в меню!"]]
+        bot.message.reply_text('Выберите индивидуальное задание',
+                               reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
+                                                                one_time_keyboard=True))
+    print("123")
+    return "choice_doklad_kursant"
+
+def choice_doklad_kursant (bot, update):
+    SOS(bot)
+    print("Я оказался тут")
+    if bot.message.text == "Вернуться в меню!":
+        print("Вы здесь")
+        check_user = check_point(mdb, bot.effective_user)
+        bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
+        return ConversationHandler.END
+    update.user_data['quest_title'] = bot.message.text
+    type = update.user_data['quest_category']
+    title = update.user_data['quest_title']
+    report_category = type.replace('.', ' ')
+    unit_report = title.replace('.', ' ')
+    Report = "Report." + report_category + "." + unit_report + ".check_report"
+    print(Report)
+    try:
+        user = mdb.users.find_one({Report: 0})
+        update.user_data['user'] = user
+        bot.message.reply_text(user["Present"]["user_lastname"])
+        unit_report = title.replace('.', ' ')
+        number = "number " + unit_report
+        print(number)
+        try:
+            number_of_type = user["Report"][report_category][unit_report][number]["number"]
+            unit_report = title.replace('.', ' ')
+            print(number_of_type)
+            i = 1
+            while i <= number_of_type:
+                dock = str(i) + " " + unit_report
+                print(dock)
+                searchstring = user["Report"][report_category][unit_report][dock]["uid"]
+                print(searchstring)
+                print(type)
+                print(title)
+                if report_category != "Отчеты":
+                    src_dir = "Report/" + type + "/" + title + "/" + user["Present"]["user_group"]
+                else:
+                    src_dir = "Report/" + title + "/" + user["Present"]["user_group"]
+                for f in os.listdir(src_dir):
+                    if searchstring in f and os.path.isfile(os.path.join(src_dir, f)):
+                        photo = open(os.path.join(src_dir, f), 'rb')
+                        update.bot.send_photo(chat_id=bot.message.chat.id, photo=photo)
+                Report = "Report." + report_category + "." + unit_report + "." + dock + ".check"
+                Reason = "Report." + report_category + "." + unit_report + "." + dock + ".reason"
+                Officer = "Report." + report_category + "." + unit_report + "." + dock + ".officer"
+                mdb.users.update_one({"user_id": user["user_id"]},
+                                     {"$set": {Report: 2,
+                                               Reason: "Отправьте доклад повторно. Техническая неполадка",
+                                               Officer: str(bot.message.chat.id)}})
+                Report = "Report." + report_category + "." + unit_report + ".check_report"
+                Officer = "Report." + report_category + "." + unit_report + ".officer"
+                mdb.users.update_one({"user_id": user["user_id"]},
+                                     {"$set": {Report: 2,
+                                               Officer: str(bot.message.chat.id)}})
+                i = i + 1
+            reply_keyboard = [["Доклад принят. Приступить к следующему"],
+                              ["Доклад не принят."],
+                              ["Я устал. Вернуться в меню!"]]
+            bot.message.reply_text(user["Present"]["user_group"] + " " + user["Present"]["user_lastname"] + ' ' + user["Present"]["user_name"] + " " + user["Present"]["user_middlename"] +'\n' + user["Present"]["user_phone"] + "\n" + title, reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True, one_time_keyboard=True))
+            return "zagruzka_v_bd_kursant"
+        except Exception as ex:
+            check_user = check_point(mdb, bot.effective_user)
+            bot.message.reply_text('У товарища ' + user["Present"]["user_lastname"] + " какие то проблемы с этим докладом. Надо звонить Широкопетлеву")
+            reply_keyboard = [["Математический анализ"],
+                              ["Аналитическая геометрия и линейная алгебра"],
+                              ["Вернуться в меню!"]]
+            bot.message.reply_text('Выберите категорию',
+                                   reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
+                                                                    one_time_keyboard=True))
+            return "type_doklad_kursant"
+    except Exception as ex:
+        check_user = check_point(mdb, bot.effective_user)
+        bot.message.reply_text('У данного задания все отчеты проверены! Выберите другое задание')
+        reply_keyboard = [["Математический анализ"],
+                          ["Аналитическая геометрия и линейная алгебра"],
+                          ["Вернуться в меню!"]]
+        bot.message.reply_text('Выберите категорию',
+                               reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
+                                                                one_time_keyboard=True))
+        return "type_doklad_kursant"
+
+
+def zagruzka_v_bd_kursant (bot, update):
+    SOS(bot)
+    if bot.message.text == "Я устал. Вернуться в меню!":
+        check_user = check_point(mdb, bot.effective_user)
+        bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
+        return ConversationHandler.END
+    if bot.message.text == "Доклад принят. Приступить к следующему":
+        type = update.user_data['quest_category']
+        title = update.user_data['quest_title']
+        type = type.replace('.', ' ')
+        title = title.replace('.', ' ')
+        Report = "Report." + type + "." + title + ".check_report"
+        Officer = "Report." + type + "." + title + ".officer"
+        user = update.user_data['user']
+        mdb.users.update_one ({"user_id": user["user_id"]},
+                              {"$set":{Report: 1,
+                                       Officer: str(bot.message.chat.id)}})
+        print("3 здесь")
+        number = "number " + title
+        try:
+            print("1 здесь")
+            number_of_type = user["Report"][type][title][number]["number"]
+            i = 1
+            while i <= number_of_type:
+                print("2 здесь")
+                dock = str(i) + " " + title
+                Report = "Report." + type + "." + title + "." + dock + ".check"
+                Reason = "Report." + type + "." + title + "." + dock + ".reason"
+                Officer = "Report." + type + "." + title + "." + dock + ".officer"
+                mdb.users.update_one({"user_id": user["user_id"]},
+                                     {"$set":{Report: 1,
+                                              Officer: str(bot.message.chat.id)}})
+                mdb.users.update_one({"user_id": user["user_id"]},
+                                     {"$unset":{Reason: 1}})
+                i = i + 1
+        except Exception as ex:
+            print("Эх, плохо то как")
+        print("Принял!")
+        officer = bot.message.chat.id
+        print("Тут!")
+        officer = mdb.users.find_one({"user_id":officer})
+        count = officer["Present"]["count"] + 1
+        print(count)
+        Present = "Present.count"
+        officer = bot.message.chat.id
+        mdb.users.update({"user_id": officer},
+                         {"$set": {Present: count}})
+        reply_keyboard = [["Загружай, еще хочу!"],
+                           ["Вернуться в меню!"]]
+        bot.message.reply_text("Давай нажимай", reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True, one_time_keyboard=True))
+        return "poehali_kursant"
+    if bot.message.text == "Доклад не принят.":
+        type = update.user_data['quest_category']
+        title = update.user_data['quest_title']
+        update.user_data['quest_category'] = type
+        update.user_data['quest_title'] = title
+        type = type.replace('.', ' ')
+        title = title.replace('.', ' ')
+        Report = "Report." + type + "." + title + ".check_report"
+        user = update.user_data['user']
+        Officer = "Report." + type + "." + title + ".officer"
+        mdb.users.update_one({"user_id": user["user_id"]},
+                             {"$set": {Report: 2,
+                                       Officer: str(bot.message.chat.id)}})
+        number = "number " + title
+        try:
+            number_of_type = user["Report"][type][title][number]["number"]
+            i = 1
+            while i <= number_of_type:
+                dock = str(i) + " " + title
+                Report = "Report." + type + "." + title + "." + dock + ".check"
+                Reason = "Report." + type + "." + title + "." + dock + ".reason"
+                Officer = "Report." + type + "." + title + "." + dock + ".officer"
+                mdb.users.update_one({"user_id": user["user_id"]},
+                                     {"$set": {Report: 2,
+                                               Officer: str(bot.message.chat.id)}})
+                mdb.users.update_one({"user_id": user["user_id"]},
+                                     {"$unset": {Reason: 1}})
+                i = i + 1
+        except Exception as ex:
+            print("Эх, плохо то как")
+        reply_keyboard = [["Доклад неполный (менее 30 предложений). Необходимо переписать. "],
+                          ["Доклад не оформлен (не подписан, нет заглавия). "],
+                          ["Работа выполнено неаккуратно (без линейки, помарки) "],
+                          ["Доклад невозможно разобрать. Сделать фото, либо переписать. "],
+                          ["Доклад списан у товарища. Переписать. "],
+                          ["Я устал. Не спрашивайте таких вопросов. Вернуться в меню!"]]
+        bot.message.reply_text("Выберите причину либо ❗ напишите своими словами и отправьте сообщение.", reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,one_time_keyboard=True))
+        return "zagruzka_v_bd_problem_kursant"
+
+def zagruzka_v_bd_problem_kursant (bot, update):
+    SOS(bot)
+    if bot.message.text == "Я устал. Не спрашивайте таких вопросов. Вернуться в меню!":
+        check_user = check_point(mdb, bot.effective_user)
+        bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
+        return ConversationHandler.END
+    reason = bot.message.text
+    type = update.user_data['quest_category']
+    title = update.user_data['quest_title']
+    update.user_data['quest_category'] = type
+    update.user_data['quest_title'] = title
+    type = type.replace('.', ' ')
+    title = title.replace('.', ' ')
+    Report = "Report." + type + "." + title + ".check_report"
+    user = update.user_data['user']
+    mdb.users.update_one({"user_id": user["user_id"]},
+                         {"$set": {Report: 2
+                                   }})
+    number = "number " + title
+    try:
+        number_of_type = user["Report"][type][title][number]["number"]
+        i = 1
+        while i <= number_of_type:
+            dock = str(i) + " " + title
+            Report = "Report." + type + "." + title + "." + dock + ".check"
+            Reason = "Report." + type + "." + title + "." + dock + ".reason"
+            Officer = "Report." + type + "." + title + "." + dock + ".officer"
+            mdb.users.update_one({"user_id": user["user_id"]},
+                                 {"$set": {Report: 2,
+                                           Reason: reason,
+                                           Officer: str(bot.message.chat.id)}})
+            i = i + 1
+    except Exception as ex:
+        print("Эх, плохо то как")
+    officer = bot.message.chat.id
+    officer = mdb.users.find_one({"user_id": officer})
+    count = officer["Present"]["count"] + 1
+    Present = "Present.count"
+    officer = bot.message.chat.id
+    mdb.users.update({"user_id": officer},
+                     {"$set": {Present: count}})
+    reply_keyboard = [["Загружай, еще хочу!"],
+                      ["Вернуться в меню!"]]
+    bot.message.reply_text("Давай нажимай", reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True, one_time_keyboard=True))
+    return "poehali_kursant"
+
+
+def poehali_kursant (bot, update):
+    SOS(bot)
+    if bot.message.text == "Вернуться в меню!":
+        print("Вы здесь")
+        check_user = check_point(mdb, bot.effective_user)
+        bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
+        return ConversationHandler.END
+    print("Поехали")
+    print(update.user_data['quest_category'])
+    print(update.user_data['quest_title'])
+    type = update.user_data['quest_category']
+    title = update.user_data['quest_title']
+    report_category = type.replace('.', ' ')
+    unit_report = title.replace('.', ' ')
+    Report = "Report." + report_category + "." + unit_report + ".check_report"
+    try:
+        user = mdb.users.find_one({Report: 0})
+        update.user_data['user'] = user
+        bot.message.reply_text(user["Present"]["user_lastname"])
+        number = "number " + unit_report
+        try:
+            number_of_type = user["Report"][report_category][unit_report][number]["number"]
+            i = 1
+            while i <= number_of_type:
+                dock = str(i) + " " + unit_report
+                searchstring = user["Report"][report_category][unit_report][dock]["uid"]
+                if report_category != "Отчеты":
+                    src_dir = "Report/" + type + "/" + title + "/" + user["Present"]["user_group"]
+                else:
+                    src_dir = "Report/" + title + "/" + user["Present"]["user_group"]
+                for f in os.listdir(src_dir):
+                    if searchstring in f and os.path.isfile(os.path.join(src_dir, f)):
+                        photo = open(os.path.join(src_dir, f), 'rb')
+                        update.bot.send_photo(chat_id=bot.message.chat.id, photo=photo)
+                i = i + 1
+                Report = "Report." + report_category + "." + unit_report + "." + dock + ".check"
+                Reason = "Report." + report_category + "." + unit_report + "." + dock + ".reason"
+                Officer = "Report." + report_category + "." + unit_report + "." + dock + ".officer"
+                print("Сейчас обновлю")
+                mdb.users.update_one({"user_id": user["user_id"]},
+                                     {"$set": {Report: 2,
+                                               Reason: "Отправьте доклад повторно. Техническая неполадка",
+                                               Officer: str(bot.message.chat.id)}})
+                Report = "Report." + report_category + "." + unit_report + ".check_report"
+                Officer = "Report." + report_category + "." + unit_report + ".officer"
+                mdb.users.update_one({"user_id": user["user_id"]},
+                                     {"$set": {Report: 2,
+                                               Officer: str(bot.message.chat.id)}})
+            reply_keyboard = [["Доклад принят. Приступить к следующему"],
+                              ["Доклад не принят."],
+                              ["Я устал. Вернуться в меню!"]]
+            bot.message.reply_text(
+                user["Present"]["user_group"] + " " + user["Present"]["user_lastname"] + ' ' + user["Present"][
+                    "user_name"] + " " + user["Present"]["user_middlename"] + '\n' + user["Present"][
+                    "user_phone"] + "\n" + title,
+                reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True, one_time_keyboard=True))
+            return "zagruzka_v_bd_kursant"
+        except Exception as ex:
+            check_user = check_point(mdb, bot.effective_user)
+            bot.message.reply_text('У товарища ' + user["Present"]["user_lastname"] + " какие то проблемы с этим докладом. Надо звонить Широкопетлеву")
+            reply_keyboard = [["Математический анализ"],
+                              ["Аналитическая геометрия и линейная алгебра"],
+                              ["Вернуться в меню!"]]
+            bot.message.reply_text('Выберите категорию',
+                                   reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
+                                                                    one_time_keyboard=True))
+            return "type_doklad_kursant"
+    except Exception as ex:
+        check_user = check_point(mdb, bot.effective_user)
+        bot.message.reply_text('У данного задания все отчеты проверены! Выберите другое задание')
+        reply_keyboard = [["Математический анализ"],
+                          ["Аналитическая геометрия и линейная алгебра"],
+                          ["Вернуться в меню!"]]
+        bot.message.reply_text('Выберите категорию',
+                               reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
+                                                                one_time_keyboard=True))
+        return "type_doklad_kursant"
+
+def check_doklad_kursant(bot, update):
+    SOS(bot)
+    reply_keyboard = [["Математический анализ"],
+                      ["Аналитическая геометрия и линейная алгебра"],
+                      ["Вернуться в меню!"]]
+    bot.message.reply_text('Выберите категорию',
+                           reply_markup=ReplyKeyboardMarkup(reply_keyboard, resize_keyboard=True,
+                                                            one_time_keyboard=True))
+    return "type_doklad_kursant"
+
+def check_kursants(bot, update):
+    SOS(bot)
+    cur_count = mdb.users.find({"Present.check_present": 7})
+    text = ""
+    for doc in cur_count:
+        count = str(doc["Present"]["count"])
+        text = text + doc["Present"]["user_lastname"] + " " + doc["Present"]["user_name"] + " " + doc["Present"]["user_middlename"] + " проверил<b> " + count + " </b>работ(ы, у)\n"
+    bot.message.reply_text(text, parse_mode=telegram.ParseMode.HTML)
+
+def get_choice_rating(bot, update):
+    if bot.message.text == "Вернуться в меню!":
+        print("Вы здесь")
+        check_user = check_point(mdb, bot.effective_user)
+        bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
+        return ConversationHandler.END
+    if bot.message.text == "Кинофильмы":
+        ok = "film_rate_ok"
+        process = "film_rate_process"
+        bad = "film_rate_bad"
+        problem = "film_rate_problem"
+        sum = 22
+    if bot.message.text == "Литературный произведения":
+        ok = "book_rate_ok"
+        process = "book_rate_process"
+        bad = "book_rate_bad"
+        problem = "book_rate_problem"
+        sum = 9
+    if bot.message.text == "Математический анализ":
+        ok = "mathematic_rate_ok"
+        process = "mathematic_rate_process"
+        bad = "mathematic_rate_bad"
+        problem = "mathematic_rate_problem"
+        sum = 19
+    if bot.message.text == "Аналитическая геометрия и линейная алгебра":
+        ok = "analitic_rate_ok"
+        process = "analitic_rate_process"
+        bad = "analitic_rate_bad"
+        problem = "analitic_rate_problem"
+        sum = 12
+    bot.message.reply_text("Необходимо подождать! Небыстрое дело.", parse_mode=ParseMode.HTML)
+    print(str(bot.effective_user.id) + " запросил рейтинг")
+    rating = "<b>Рейтинг курса по представлению отчетов по индивидуальным заданиям</b> показан в виде:\n" \
+             "Место - Группа - Ф.И. - Принятые доклады✅/На обработке⏳/Не представленные⚠/Непринятые⛔\n Поехали: \n"
+    count = 1
+    cur = mdb.users.find()
+    cur = cur.sort([("Present.user_group", 1),("Present.rating" + bad, 1),("Present.rating" + problem, 1)])
+
+    for doc in cur:
+        try:
+            try:
+                if doc["user_id"] == bot.effective_user.id:
+                    mesto = str(count)
+                if doc["Present"]["check_present"] == 2 or doc["Present"]["check_present"] == 3 or doc["Present"]["check_present"] == 4:
+                    rating = rating + "<b>" + str(count) + ".</b> "\
+                        + doc["Present"]["user_group"] + " " + doc["Present"]["user_lastname"] + " " + doc["Present"]["user_name"] + " " \
+                        + str(doc["Present"]["rating"][ok]) + "✅/ " + str(doc["Present"]["rating"][process]) + "⏳/ " + str(doc["Present"]["rating"][bad]) + "⚠/ "  + str(doc["Present"]["rating"][problem]) + "⛔\n"
+
+                    count = count + 1
+                    if count == 65:
+                        bot.message.reply_text(rating, parse_mode=ParseMode.HTML)
+                        rating = ""
+            except Exception as ex:
+                b = "ok"
+        except Exception as ex:
+            b = "ok"
+    bot.message.reply_text(rating + "\nВаше место:<b> " + mesto + "</b>", parse_mode=ParseMode.HTML)
+    rating_901_ok = 0
+    rating_903_ok = 0
+    rating_904_ok = 0
+    rating_905_1_ok = 0
+    rating_905_2_ok = 0
+    rating_906_ok = 0
+    rating_901_process = 0
+    rating_903_process = 0
+    rating_904_process = 0
+    rating_905_1_process = 0
+    rating_905_2_process = 0
+    rating_906_process = 0
+    rating_901_bad = 0
+    rating_903_bad = 0
+    rating_904_bad = 0
+    rating_905_1_bad = 0
+    rating_905_2_bad = 0
+    rating_906_bad = 0
+    rating_901_problem = 0
+    rating_903_problem = 0
+    rating_904_problem = 0
+    rating_905_1_problem = 0
+    rating_905_2_problem = 0
+    rating_906_problem = 0
+    cur = mdb.users.find()
+    for doc in cur:
+        try:
+
+            try:
+                    if doc["Present"]["user_group"] == "901":
+                        rating_901_ok = rating_901_ok + doc["Present"]["rating"][ok]
+                        rating_901_process = rating_901_process + doc["Present"]["rating"][process]
+                        rating_901_bad = rating_901_bad + doc["Present"]["rating"][bad]
+                        rating_901_problem = rating_901_problem + doc["Present"]["rating"][problem]
+                    if doc["Present"]["user_group"] == "903":
+                        rating_903_ok = rating_903_ok + doc["Present"]["rating"][ok]
+                        rating_903_process = rating_903_process + doc["Present"]["rating"][process]
+                        rating_903_bad = rating_903_bad + doc["Present"]["rating"][bad]
+                        rating_903_problem = rating_903_problem + doc["Present"]["rating"][problem]
+                    if doc["Present"]["user_group"] == "904":
+                        rating_904_ok = rating_904_ok + doc["Present"]["rating"][ok]
+                        rating_904_process = rating_904_process + doc["Present"]["rating"][process]
+                        rating_904_bad = rating_904_bad + doc["Present"]["rating"][bad]
+                        rating_904_problem = rating_904_problem + doc["Present"]["rating"][problem]
+                    if doc["Present"]["user_group"] == "905-1":
+                        rating_905_1_ok = rating_905_1_ok + doc["Present"]["rating"][ok]
+                        rating_905_1_process = rating_905_1_process + doc["Present"]["rating"][process]
+                        rating_905_1_bad = rating_905_1_bad + doc["Present"]["rating"][bad]
+                        rating_905_1_problem = rating_905_1_problem + doc["Present"]["rating"][problem]
+                    if doc["Present"]["user_group"] == "905-2":
+                        rating_905_2_ok = rating_905_2_ok + doc["Present"]["rating"][ok]
+                        rating_905_2_process = rating_905_2_process + doc["Present"]["rating"][process]
+                        rating_905_2_bad = rating_905_2_bad + doc["Present"]["rating"][bad]
+                        rating_905_2_problem = rating_905_2_problem + doc["Present"]["rating"][problem]
+                    if doc["Present"]["user_group"] == "906":
+                        rating_906_ok = rating_906_ok + doc["Present"]["rating"][ok]
+                        rating_906_process = rating_906_process + doc["Present"]["rating"][process]
+                        rating_906_bad = rating_906_bad + doc["Present"]["rating"][bad]
+                        rating_906_problem = rating_906_problem + doc["Present"]["rating"][problem]
+            except Exception as ex:
+                b = "ok"
+        except Exception as ex:
+            b = "ok"
+    rating_group= "<b>Учет докладов групп </b> представлен в виде:\n" \
+             "Группа - Количество принятых докладов✅/Не обработанных⏳/Не представленных⚠/Непринятых⛔\n"
+    rating_group = rating_group + "901 учебная группа - " + str(rating_901_ok) + "✅/ " + str(rating_901_process) + "⏳/ " + str(rating_901_bad) + "⚠/ "  + str(rating_901_problem) + "⛔\n" + \
+                   "903 учебная группа - " + str(rating_903_ok) + "✅/ " + str(rating_903_process) + "⏳/ " + str(rating_903_bad) + "⚠/ "  + str(rating_903_problem) + "⛔\n" + \
+                   "904 учебная группа - " + str(rating_904_ok) + "✅/ " + str(rating_904_process) + "⏳/ " + str(rating_904_bad) + "⚠/ "  + str(rating_904_problem) + "⛔\n" + \
+                   "905-1 учебная группа - " + str(rating_905_1_ok) + "✅/ " + str(rating_905_1_process) + "⏳/ " + str(rating_905_1_bad) + "⚠/ "  + str(rating_905_1_problem) + "⛔\n" + \
+                   "905-2 учебная группа - " + str(rating_905_2_ok) + "✅/ " + str(rating_905_2_process) + "⏳/ " + str(rating_905_2_bad) + "⚠/ "  + str(rating_905_2_problem) + "⛔\n" + \
+                   "906 учебная группа - " + str(rating_906_ok) + "✅/ " + str(rating_906_process) + "⏳/ " + str(rating_906_bad) + "⚠/ "  + str(rating_906_problem) + "⛔\n"
+    bot.message.reply_text(rating_group, parse_mode=ParseMode.HTML)
+    rating_group= "<b>Учет докладов групп </b>представлен в виде:\n" \
+             "Группа - Процент(%) принятых докладов✅/Не обработанных⏳/Не представленных⚠/Непринятых⛔\n"
+    rating_group = rating_group + "901 учебная группа - " + str(round(rating_901_ok * 100 / (sum * 23),2)) + "%✅/ " + str(round(rating_901_process * 100 / (sum * 23),2)) + "%⏳/ " + str(round(rating_901_bad * 100 / (sum * 23),2)) + "%⚠/ "  + str(round(rating_901_problem * 100 / (sum * 23),2)) + "%⛔\n" + \
+                   "903 учебная группа - " + str(round(rating_903_ok * 100 / (sum * 15),2)) + "%✅/ " + str(round(rating_903_process * 100 / (sum * 15),2)) + "%⏳/ " + str(round(rating_903_bad * 100 / (sum * 15),2)) + "%⚠/ "  + str(round(rating_903_problem * 100 / (sum * 15),2)) + "%⛔\n" + \
+                   "904 учебная группа - " + str(round(rating_904_ok * 100 / (sum * 15),2)) + "%✅/ " + str(round(rating_904_process * 100 / (sum * 15),2)) + "%⏳/ " + str(round(rating_904_bad * 100 / (sum * 15),2)) + "%⚠/ "  + str(round(rating_904_problem * 100 / (sum * 15),2)) + "%⛔\n" + \
+                   "905-1 учебная группа - " + str(round(rating_905_1_ok * 100 / (sum * 29),2)) + "%✅/ " + str(round(rating_905_1_process * 100 / (sum * 29),2)) + "%⏳/ " + str(round(rating_905_1_bad * 100 / (sum * 29),2)) + "%⚠/ "  + str(round(rating_905_1_problem * 100 / (sum * 29),2)) + "%⛔\n" + \
+                   "905-2 учебная группа - " + str(round(rating_905_2_ok * 100 / (sum * 29),2)) + "%✅/ " + str(round(rating_905_2_process * 100 / (sum * 29),2)) + "%⏳/ " + str(round(rating_905_2_bad * 100 / (sum * 29),2)) + "%⚠/ "  + str(round(rating_905_2_problem * 100 / (sum * 29),2)) + "%⛔\n" + \
+                   "906 учебная группа - " + str(round(rating_906_ok * 100 / (sum * 15),2)) + "%✅/ " + str(round(rating_906_process * 100 / (sum * 15),2)) + "%⏳/ " + str(round(rating_906_bad * 100 / (sum * 15),2)) + "%⚠/ "  + str(round(rating_906_problem * 100 / (sum * 15),2)) + "%⛔\n"
+    bot.message.reply_text(rating_group, parse_mode=ParseMode.HTML)
+    bot.message.reply_text("Рейтинг представлен🏆!", parse_mode=ParseMode.HTML)
+    print(str(bot.effective_user.id) + " посмотрел рейтинг")
+    check_user = check_point(mdb, bot.effective_user)
+    bot.message.reply_text('Вы вернулись в меню!', reply_markup=get_keyboard(check_user))
+    return ConversationHandler.END
